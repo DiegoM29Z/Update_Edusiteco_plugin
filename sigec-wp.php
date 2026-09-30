@@ -111,3 +111,53 @@ function sigec_guardar_metaboxes_convocatoria( $post_id ) {
     }
 }
 add_action( 'save_post', 'sigec_guardar_metaboxes_convocatoria' );
+/* -------------------------------------------------------------------------*/
+
+
+/**
+ * 4. Personalizar las columnas en el listado de Convocatorias
+ */
+function sigec_columnas_personalizadas_convocatoria( $columns ) {
+    $nuevas_columnas = array();
+    $nuevas_columnas['cb'] = $columns['cb']; 
+    $nuevas_columnas['title'] = 'Título de la Convocatoria';
+    $nuevas_columnas['date'] = $columns['date']; // <-- Fecha nativa reubicada aquí
+    $nuevas_columnas['presupuesto'] = 'Presupuesto Estimado';
+    $nuevas_columnas['fecha_cierre'] = 'Fecha de Cierre';
+    $nuevas_columnas['estado_convocatoria'] = 'Estado';
+    $nuevas_columnas['ofertas'] = 'Ofertas Recibidas';
+    
+    return $nuevas_columnas;
+}
+add_filter( 'manage_convocatoria_posts_columns', 'sigec_columnas_personalizadas_convocatoria' );
+
+function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
+    switch ( $column ) {
+        case 'presupuesto':
+            $presupuesto = get_post_meta( $post_id, '_sigec_presupuesto', true );
+            echo $presupuesto ? '$' . number_format( $presupuesto, 0, ',', '.' ) . ' COP' : '—';
+            break;
+
+        case 'fecha_cierre':
+            $fecha = get_post_meta( $post_id, '_sigec_fecha_cierre', true );
+            echo $fecha ? date( 'd-m-Y', strtotime( $fecha ) ) : '—';
+            break;
+
+        case 'estado_convocatoria':
+            $estado = get_post_status( $post_id );
+            if ( $estado == 'publish' ) {
+                echo '<span style="background-color: #e6f6ea; color: #00A32A; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">Publicada</span>';
+            } elseif ( $estado == 'draft' ) {
+                echo '<span style="background-color: #f0f0f0; color: #666; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">Borrador</span>';
+            } else {
+                echo esc_html( $estado );
+            }
+            break;
+
+        case 'ofertas':
+            // Este dato se conectará después cuando armemos el formulario público
+            echo '<span style="color: #0073aa; font-weight: 500;">0 recibidas</span>';
+            break;
+    }
+}
+add_action( 'manage_convocatoria_posts_custom_column', 'sigec_mostrar_datos_columnas_convocatoria', 10, 2 );

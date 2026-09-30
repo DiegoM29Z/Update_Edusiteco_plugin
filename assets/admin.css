@@ -1,0 +1,14 @@
+/* Estilos para la tabla de Convocatorias en el panel de WordPress */
+.wp-list-table th#presupuesto,
+.wp-list-table th#fecha_cierre,
+.wp-list-table th#estado_convocatoria {
+    background-color: #f0f4f8;
+    color: #003366;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.wp-list-table td.presupuesto {
+    font-family: monospace;
+    font-size: 13px;
+}
