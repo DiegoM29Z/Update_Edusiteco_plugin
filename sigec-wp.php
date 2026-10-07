@@ -161,3 +161,49 @@ function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
     }
 }
 add_action( 'manage_convocatoria_posts_custom_column', 'sigec_mostrar_datos_columnas_convocatoria', 10, 2 );
+
+/**
+ * PRUEBA TEMPORAL DE GOOGLE DRIVE OAUTH (La eliminaremos después)
+ */
+add_action('admin_init', function() {
+    
+    // 1. Atrapar a Google cuando nos devuelve a WordPress con el "code"
+    if ( isset( $_GET['code'] ) && current_user_can( 'manage_options' ) ) {
+        require_once plugin_dir_path( __FILE__ ) . 'includes/class-sigec-drive.php';
+        $drive = new SIGEC_Google_Drive();
+        
+        // Guardar la llave secreta en la base de datos
+        if ( $drive->procesar_codigo_autorizacion( $_GET['code'] ) ) {
+            wp_die( '<h1>¡Conexión Exitosa! ✅</h1><p><a href="' . admin_url('?test_sigec_drive=upload') . '" style="background:#0073aa; color:#fff; padding:10px 15px; text-decoration:none; border-radius:4px; display:inline-block;">Subir Archivo de Prueba</a></p>' );
+        }
+    }
+
+    // 2. Pantallas de nuestro test
+    if ( isset( $_GET['test_sigec_drive'] ) && current_user_can( 'manage_options' ) ) {
+        require_once plugin_dir_path( __FILE__ ) . 'includes/class-sigec-drive.php';
+        $drive = new SIGEC_Google_Drive();
+
+        // Si le dimos al botón de subir archivo
+        if ( $_GET['test_sigec_drive'] === 'upload' ) {
+            $temp_file = tempnam( sys_get_temp_dir(), 'sigec' );
+            file_put_contents( $temp_file, 'Prueba exitosa de conexion OAuth entre WordPress y Google Drive para SIGEC - Fecha: ' . date('Y-m-d H:i:s') );
+            
+            $resultado = $drive->subir_documento_licitacion( $temp_file, 'Documento_Prueba_OAuth.txt' );
+            @unlink( $temp_file );
+            
+            if ( $resultado['success'] ) {
+                wp_die( '<h1>¡Éxito total, Diego! 🚀</h1><p>El archivo se subió a tu cuenta.</p><p><a href="' . esc_url( $resultado['link'] ) . '" target="_blank" style="background:#28a745; color:#fff; padding:10px 15px; text-decoration:none; border-radius:4px; display:inline-block;">Ver Archivo en Drive</a></p>' );
+            } else {
+                wp_die( '<h1>Error ❌</h1><p>' . esc_html( $resultado['error'] ) . '</p>' );
+            }
+        }
+
+        // Pantalla inicial
+        if ( ! get_option( 'sigec_google_token' ) ) {
+            $auth_url = $drive->obtener_url_autorizacion();
+            wp_die( '<h1>Vincular Google Drive 🔗</h1><p>Para subir archivos, primero autoriza tu cuenta.</p><p><a href="' . esc_url( $auth_url ) . '" style="background:#0073aa; color:#fff; padding:10px 15px; text-decoration:none; border-radius:4px; display:inline-block;">Conectar con Google</a></p>' );
+        } else {
+            wp_die( '<h1>Ya estás conectado ✅</h1><p><a href="' . admin_url('?test_sigec_drive=upload') . '" style="background:#0073aa; color:#fff; padding:10px 15px; text-decoration:none; border-radius:4px; display:inline-block;">Subir Archivo de Prueba</a></p>' );
+        }
+    }
+});
