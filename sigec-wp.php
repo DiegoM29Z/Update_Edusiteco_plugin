@@ -63,11 +63,6 @@ function sigec_columnas_personalizadas_convocatoria( $columns ) {
 }
 add_filter( 'manage_convocatoria_posts_columns', 'sigec_columnas_personalizadas_convocatoria' );
 
-/**
- * ---------------------------------------------------
- * MAGIA DE LA TABLA DE ADMINISTRACIÓN Y FILTROS
- * ---------------------------------------------------
- */
 
 // 1. Columnas bonitas de la tabla (Estados y colores)
 function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
@@ -198,9 +193,33 @@ function sigec_cargar_plantilla_individual( $template ) {
 }
 add_filter( 'single_template', 'sigec_cargar_plantilla_individual' );
 
-// ==============================================================
-// 6. ENLACE VITAL: CARGAR EL CATÁLOGO (EL QUE ARREGLA EL TEXTO PLANO)
-// ==============================================================
+// 7. Inyectar shorcode automaticamente al activar el plugin.
+function sigec_inyectar_shortcode_activacion() {
+    // Busca la página que el administrador creó
+    $pagina = get_page_by_title( 'Portal de Contratación' );
+    
+    // Si la página existe, revisamos su contenido
+    if ( $pagina ) {
+        $contenido_actual = $pagina->post_content;
+        $shortcode = '[sigec_convocatorias_abiertas]';
+        
+        // Verificamos si el shortcode ya está adentro para no duplicarlo por error
+        if ( strpos( $contenido_actual, $shortcode ) === false ) {
+            
+            // Si no lo tiene, se lo agregamos al contenido
+            $nuevo_contenido = $contenido_actual . "\n\n" . $shortcode;
+            
+            // Actualizamos la página silenciosamente en la base de datos
+            wp_update_post( array(
+                'ID'           => $pagina->ID,
+                'post_content' => $nuevo_contenido
+            ) );
+        }
+    }
+}
+// Ejecutar esta inyección SOLO cuando se activa el plugin
+register_activation_hook( __FILE__, 'sigec_inyectar_shortcode_activacion' );
+
 require_once plugin_dir_path( __FILE__ ) . 'public/public-shortcodes.php';
 
 // Cargar la interfaz de administración para Google Drive
