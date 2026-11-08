@@ -221,6 +221,91 @@ function sigec_inyectar_shortcode_activacion() {
 // Ejecutar esta inyección SOLO cuando se activa el plugin
 register_activation_hook( __FILE__, 'sigec_inyectar_shortcode_activacion' );
 
+// 7. Recursos públicos del frontend (CSS y JS)
+
+/**
+ * Lista de shortcodes públicos de SIGEC.
+ */
+function sigec_shortcodes_publicos() {
+    return array(
+        'sigec_convocatorias_abiertas',
+        'sigec_acceso_proveedores',
+        'sigec_panel_proveedor',
+        'sigec_formulario_postulacion',
+    );
+}
+
+/**
+ * ¿La página actual contiene alguno de los shortcodes indicados?
+ */
+function sigec_pagina_tiene_shortcode( $shortcodes ) {
+    if ( ! is_singular() ) {
+        return false;
+    }
+    $post = get_post();
+    if ( ! $post ) {
+        return false;
+    }
+    foreach ( (array) $shortcodes as $shortcode ) {
+        if ( has_shortcode( $post->post_content, $shortcode ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Registra el CSS/JS públicos y los encola solo en las páginas que los usan.
+ */
+function sigec_encolar_assets_publicos() {
+    $url = plugin_dir_url( __FILE__ );
+    $dir = plugin_dir_path( __FILE__ );
+
+    // Estilos (filemtime = versión automática para evitar caché vieja al editar)
+    wp_register_style(
+        'sigec-public',
+        $url . 'assets/css/sigec-public.css',
+        array( 'dashicons' ),
+        filemtime( $dir . 'assets/css/sigec-public.css' )
+    );
+
+    // Buscador AJAX del catálogo (cargado en el footer)
+    wp_register_script(
+        'sigec-buscador',
+        $url . 'assets/js/sigec-buscador.js',
+        array(),
+        filemtime( $dir . 'assets/js/sigec-buscador.js' ),
+        true
+    );
+    wp_localize_script( 'sigec-buscador', 'sigec_ajax', array(
+        'url' => admin_url( 'admin-ajax.php' ),
+    ) );
+
+    if ( sigec_pagina_tiene_shortcode( sigec_shortcodes_publicos() ) ) {
+        wp_enqueue_style( 'sigec-public' );
+    }
+    if ( sigec_pagina_tiene_shortcode( 'sigec_convocatorias_abiertas' ) ) {
+        wp_enqueue_script( 'sigec-buscador' );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'sigec_encolar_assets_publicos' );
+
+/**
+ * Clase en el <body> de la página del catálogo, para aplicar los ajustes
+ * del tema (bordes, enlaces de edición) solo allí.
+ */
+function sigec_body_class_catalogo( $classes ) {
+    if ( sigec_pagina_tiene_shortcode( 'sigec_convocatorias_abiertas' ) ) {
+        $classes[] = 'sigec-pagina-catalogo';
+    }
+    return $classes;
+}
+add_filter( 'body_class', 'sigec_body_class_catalogo' );
+
+// Motor de autenticación de proveedores (registro y login)
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-sigec-auth.php';
+
+// Shortcodes públicos (despachador de vistas)
 require_once plugin_dir_path( __FILE__ ) . 'public/public-shortcodes.php';
 
 // Cargar la interfaz de administración para Google Drive

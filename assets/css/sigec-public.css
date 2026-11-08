@@ -1,0 +1,614 @@
+/* ==========================================================================
+   SIGEC-WP · Estilos públicos (Frontend)
+   --------------------------------------------------------------------------
+   Se carga SOLO en páginas que contienen shortcodes de SIGEC
+   (ver sigec_encolar_assets_publicos() en sigec-wp.php).
+
+   Índice:
+     1. Ocultar elementos nativos del tema
+     2. Contenedores full-width (compartidos)
+     3. Tipografía compartida (títulos, subtítulos, antetítulos)
+     4. Catálogo de convocatorias   [sigec_convocatorias_abiertas]
+     5. Acceso / Registro           [sigec_acceso_proveedores]
+     6. Panel del proveedor         [sigec_panel_proveedor]
+     7. Formulario de postulación   [sigec_formulario_postulacion]
+     8. Modo oscuro (.dark)
+     9. Responsive
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. OCULTAR ELEMENTOS NATIVOS DEL TEMA
+   ========================================================================== */
+
+/* Títulos nativos de WordPress (todas las páginas SIGEC) */
+.entry-header,
+.page-header,
+h1.entry-title,
+h1.page-title {
+    display: none !important;
+}
+
+/* Solo en el catálogo: líneas extra y enlaces de edición
+   (la clase del body la agrega sigec_body_class_catalogo()) */
+body.sigec-pagina-catalogo .entry-footer,
+body.sigec-pagina-catalogo .post-edit-link,
+body.sigec-pagina-catalogo .edit-link,
+body.sigec-pagina-catalogo hr.wp-block-separator {
+    display: none !important;
+}
+
+/* Quitar bordes que inyecta el tema principal */
+body.sigec-pagina-catalogo .site-main > article {
+    border-bottom: none !important;
+}
+body.sigec-pagina-catalogo .site-content,
+body.sigec-pagina-catalogo .site-main {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+
+/* ==========================================================================
+   2. CONTENEDORES FULL-WIDTH (95vw) — compartidos por los 4 shortcodes
+   ========================================================================== */
+.sigec-catalogo,
+.sigec-auth-wrapper,
+.sigec-dashboard-wrapper,
+.sigec-form-wrapper {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px 0;
+    font-family: inherit;
+    background: transparent;
+    color: #1A202C;
+}
+
+.sigec-auth-wrapper,
+.sigec-dashboard-wrapper,
+.sigec-form-wrapper {
+    margin: 20px 0;
+}
+
+.sigec-auth-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sigec-dashboard-wrapper {
+    min-height: 70vh;
+}
+
+
+/* ==========================================================================
+   3. TIPOGRAFÍA COMPARTIDA
+   ========================================================================== */
+
+/* Título principal grande, alineado a la izquierda */
+.sigec-catalogo h1.page-title,
+.sigec-catalogo h1.entry-title,
+.sigec-catalogo-title,
+.sigec-auth-header h1,
+.sigec-dashboard-title-area h1,
+.sigec-form-wrapper h1 {
+    text-align: left !important;
+    font-size: 3.5rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 10px !important;
+    line-height: 1.2;
+    color: #1A202C;
+}
+
+/* Subtítulos */
+.sigec-header-subtitle,
+.sigec-dashboard-title-area p,
+.sigec-form-wrapper p.subtitle {
+    color: #6b7280;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    text-align: left;
+}
+.sigec-header-subtitle         { margin-bottom: 30px; }
+.sigec-dashboard-title-area p  { margin: 0; }
+.sigec-form-wrapper p.subtitle { margin-bottom: 40px; }
+
+/* Antetítulo institucional (texto pequeño en mayúsculas sobre el título) */
+.sigec-header-institucional,
+.sigec-auth-header span {
+    color: #0a4b9c;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 5px;
+}
+.sigec-header-institucional { font-size: 0.85rem; }
+.sigec-auth-header span     { font-size: 1rem; }
+
+
+/* ==========================================================================
+   4. CATÁLOGO DE CONVOCATORIAS
+   ========================================================================== */
+.sigec-header-title-wrapper {
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+/* Controles de búsqueda */
+.sigec-controles {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #e5e7eb;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.sigec-select-estado {
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #1A202C;
+    background-color: #ffffff;
+    outline: none;
+    transition: all 0.2s ease;
+    min-width: 240px;
+    cursor: pointer;
+    padding-right: 15px;
+    background-image: none !important;
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+    -moz-appearance: auto !important;
+}
+
+.sigec-input-busqueda,
+input.sigec-input-busqueda,
+.sigec-catalogo input.sigec-input-busqueda {
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #1A202C;
+    background-color: #ffffff;
+    outline: none;
+    transition: all 0.2s ease;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%239ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') !important;
+    background-repeat: no-repeat !important;
+    background-position: 14px center !important;
+    background-size: 16px 16px !important;
+    padding: 12px 15px 12px 44px !important;
+    box-sizing: border-box !important;
+}
+
+.sigec-input-busqueda:focus,
+input.sigec-input-busqueda:focus,
+.sigec-select-estado:focus {
+    border-color: #0a4b9c;
+    box-shadow: 0 0 0 3px rgba(10, 75, 156, 0.1);
+}
+
+/* Contenedor de resultados (se actualiza vía AJAX) */
+#sigec-resultados-contenedor {
+    position: relative;
+    min-height: 200px;
+    transition: opacity 0.3s ease;
+}
+
+/* Estado de carga */
+.sigec-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Fila de convocatoria */
+.sigec-tarjeta {
+    background: transparent;
+    border-radius: 0;
+    padding: 30px 0;
+    margin-bottom: 0;
+    border-bottom: 2px solid #d1d5db;
+    box-shadow: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+}
+
+.sigec-tarjeta-info   { flex: 1; min-width: 300px; }
+.sigec-meta-superior  { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.sigec-proceso-id     { color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; }
+.sigec-badge          { padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
+.sigec-badge.abierta  { background-color: #dcfce7; color: #166534; }
+.sigec-badge.cerrada  { background-color: #fee2e2; color: #dc2626; }
+.sigec-titulo-conv    { font-size: 22px; font-weight: 700; color: #1A202C; margin: 0 0 16px 0; }
+.sigec-meta-inferior  { display: flex; gap: 30px; color: #4b5563; font-size: 15px; align-items: center; flex-wrap: wrap; }
+.sigec-meta-item      { display: flex; align-items: center; gap: 8px; }
+.sigec-monto          { color: #0a4b9c; font-weight: 700; }
+
+/* Botones */
+.sigec-acciones { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+.sigec-btn-detalles {
+    background-color: transparent;
+    color: #0a4b9c;
+    padding: 10px 20px;
+    border: 2px solid #0a4b9c;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.sigec-btn-detalles:hover { background-color: #f0f7ff; color: #073b7a; border-color: #073b7a; }
+
+.sigec-btn-participar {
+    background-color: #0a4b9c;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    border: 2px solid #0a4b9c;
+}
+.sigec-btn-participar:hover { background-color: #073b7a; border-color: #073b7a; color: white; }
+
+.sigec-btn-disabled {
+    background-color: #e5e7eb !important;
+    border-color: #d1d5db !important;
+    color: #9ca3af !important;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* Alerta informativa */
+.sigec-alerta {
+    background-color: transparent;
+    border: 1px solid #c8d9ed;
+    border-left: 4px solid #0a4b9c;
+    padding: 16px;
+    color: #0a4b9c;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    border-radius: 4px;
+}
+
+
+/* ==========================================================================
+   5. ACCESO / REGISTRO DE PROVEEDORES
+   ========================================================================== */
+.sigec-auth-header { text-align: left; width: 100%; max-width: 1100px; margin-bottom: 30px; }
+
+.sigec-auth-box {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+}
+
+.sigec-auth-col       { padding: 40px; flex: 1; display: flex; flex-direction: column; }
+.sigec-auth-col-login { border-bottom: 1px solid #cbd5e1; }
+
+.sigec-auth-col h3     { font-size: 24px; color: #0f172a; margin: 0 0 5px 0; font-weight: 700; }
+.sigec-auth-col p.desc { color: #64748b; font-size: 15px; margin-bottom: 30px; line-height: 1.5; }
+
+.sigec-form-group       { margin-bottom: 20px; }
+.sigec-form-row         { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+.sigec-form-row > div   { flex: 1; min-width: 200px; }
+
+.sigec-auth-wrapper label      { display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px; }
+.sigec-auth-wrapper label span { color: #dc2626; }
+
+.sigec-auth-wrapper input[type="text"],
+.sigec-auth-wrapper input[type="email"],
+.sigec-auth-wrapper input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #1e293b;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    background: transparent;
+}
+.sigec-auth-wrapper input:focus { border-color: #0a4b9c; outline: none; }
+
+.sigec-btn-auth {
+    width: 100%;
+    background: #0a4b9c;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+.sigec-btn-auth:hover { background: #073b7a; }
+
+.sigec-link-olvido {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #0a4b9c;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+.sigec-link-olvido:hover { color: #073b7a; text-decoration: underline; }
+
+/* Mensajes de estado */
+.sigec-msg       { padding: 15px; border-radius: 6px; margin-bottom: 25px; font-size: 15px; font-weight: 600; }
+.sigec-msg.error { background: #fee2e2; color: #b91c1c; border-left: 4px solid #ef4444; }
+.sigec-msg.exito { background: #dcfce7; color: #15803d; border-left: 4px solid #22c55e; }
+
+
+/* ==========================================================================
+   6. PANEL DEL PROVEEDOR (DASHBOARD)
+   ========================================================================== */
+.sigec-dashboard-header {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 20px;
+}
+
+.sigec-btn-logout {
+    background: #dc2626;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+.sigec-btn-logout:hover { background: #b91c1c; color: white; }
+
+/* Tarjetas de información */
+.sigec-dash-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.sigec-dash-card h3 { font-size: 22px; color: #0f172a; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+
+.sigec-info-grid       { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+.sigec-info-item label { display: block; font-size: 12px; font-weight: 700; color: #0a4b9c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.sigec-info-item span  { font-size: 18px; color: #1e293b; font-weight: 600; display: block; }
+
+
+/* ==========================================================================
+   7. FORMULARIO DE POSTULACIÓN
+   ========================================================================== */
+.sigec-form-link-volver {
+    color: #4b5563;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 30px;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+.sigec-form-link-volver:hover { color: #0a4b9c; }
+
+/* Caja de información del proceso */
+.sigec-info-box {
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #0a4b9c;
+    border-radius: 6px;
+    padding: 25px;
+    background: #f8fafc;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.sigec-info-box .title     { color: #0a4b9c; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+.sigec-info-box .main-text { color: #1e293b; font-size: 20px; font-weight: 700; margin: 0; }
+.sigec-info-box .date-text { color: #dc2626; font-size: 15px; font-weight: 700; text-align: right; }
+
+/* Caja del valor ofertado */
+.sigec-valor-box       { border: 2px solid #0a4b9c; border-radius: 6px; padding: 25px; background: #ffffff; margin-bottom: 40px; }
+.sigec-valor-box label { color: #1e293b; font-weight: 700; font-size: 18px; display: block; margin-bottom: 5px; }
+.sigec-valor-box input[type="text"] {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #cbd5e1;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    padding: 10px 0;
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.sigec-valor-box input[type="text"]:focus { border-bottom-color: #0a4b9c; }
+
+/* Grilla de documentos */
+.sigec-docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+.sigec-doc-item  { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px 20px; text-align: center; background: #ffffff; transition: all 0.2s; }
+.sigec-doc-item:hover            { border-color: #0a4b9c; background-color: #f0f7ff; }
+.sigec-doc-item .icon            { color: #0a4b9c; font-size: 28px; margin-bottom: 15px; width: 28px; height: 28px; }
+.sigec-doc-item strong           { display: block; color: #1e293b; font-size: 16px; margin-bottom: 5px; }
+.sigec-doc-item small            { color: #64748b; display: block; margin-bottom: 15px; }
+.sigec-doc-item input[type="file"] { max-width: 100%; font-size: 13px; cursor: pointer; }
+
+.sigec-checkbox { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 40px; color: #374151; font-size: 15px; font-weight: 500; }
+
+.sigec-submit-btn {
+    background: #0a4b9c;
+    color: #ffffff;
+    border: none;
+    padding: 18px;
+    width: 100%;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.sigec-submit-btn:hover { background: #073b7a; }
+
+
+/* ==========================================================================
+   8. MODO OSCURO (.dark)
+   ========================================================================== */
+
+/* --- Compartido: textos claros en contenedores y títulos --- */
+.dark .sigec-catalogo,
+.dark h1,
+.dark .page-title,
+.dark .entry-title,
+.dark .sigec-catalogo-title,
+.dark h2.sigec-titulo-conv,
+.dark .sigec-auth-wrapper,
+.dark .sigec-auth-header h1,
+.dark .sigec-dashboard-wrapper,
+.dark .sigec-dashboard-title-area h1,
+.dark .sigec-form-wrapper,
+.dark .sigec-form-wrapper h1 {
+    color: #EDF2F7 !important;
+}
+
+.dark .sigec-header-institucional,
+.dark .sigec-auth-header span {
+    color: #60a5fa !important;
+}
+
+/* --- Catálogo --- */
+.dark .sigec-header-subtitle,
+.dark .sigec-meta-inferior,
+.dark .sigec-proceso-id { color: #cbd5e1 !important; }
+
+.dark .sigec-controles { border-bottom-color: #4b5563 !important; }
+.dark .sigec-tarjeta   { border-bottom-color: #6b7280 !important; }
+
+.dark .sigec-input-busqueda,
+.dark input.sigec-input-busqueda,
+.dark .sigec-select-estado {
+    background-color: #1f2937 !important;
+    color: #EDF2F7 !important;
+    border-color: #4b5563 !important;
+}
+.dark .sigec-select-estado option { background-color: #1f2937; color: #EDF2F7; }
+
+.dark .sigec-btn-detalles       { color: #60a5fa; border-color: #60a5fa; }
+.dark .sigec-btn-detalles:hover { background-color: rgba(96, 165, 250, 0.1); color: #93c5fd; border-color: #93c5fd; }
+
+/* Monto del presupuesto en azul brillante */
+.dark .sigec-monto { color: #3b82f6 !important; }
+
+/* Alerta informativa en azul brillante */
+.dark .sigec-alerta {
+    color: #3b82f6 !important;
+    border-color: #1e3a8a !important;
+    border-left-color: #3b82f6 !important;
+    background-color: rgba(59, 130, 246, 0.05) !important;
+}
+.dark .sigec-alerta .dashicons-info { color: #3b82f6 !important; }
+
+/* --- Acceso / Registro --- */
+.dark .sigec-auth-box          { background: rgba(255,255,255,0.02); border-color: #374151; box-shadow: none; }
+.dark .sigec-auth-col-login    { border-color: #374151; }
+.dark .sigec-auth-col h3       { color: #f8fafc; }
+.dark .sigec-auth-col p.desc   { color: #94a3b8; }
+.dark .sigec-auth-wrapper label       { color: #cbd5e1; }
+.dark .sigec-auth-wrapper input       { border-color: #475569; color: #f8fafc; }
+.dark .sigec-auth-wrapper input:focus { border-color: #3b82f6; }
+.dark .sigec-link-olvido       { color: #60a5fa; }
+.dark .sigec-link-olvido:hover { color: #93c5fd; }
+
+/* --- Panel del proveedor --- */
+.dark .sigec-dashboard-header       { border-bottom-color: #374151; }
+.dark .sigec-dashboard-title-area p { color: #cbd5e1; }
+.dark .sigec-dash-card              { background: rgba(255,255,255,0.02); border-color: #374151; box-shadow: none; }
+.dark .sigec-dash-card h3,
+.dark .sigec-info-item span         { color: #f8fafc; }
+.dark .sigec-info-item label        { color: #60a5fa; }
+
+/* --- Formulario de postulación --- */
+.dark .sigec-form-wrapper p.subtitle,
+.dark .sigec-checkbox               { color: #cbd5e1; }
+.dark .sigec-form-link-volver       { color: #9ca3af; }
+.dark .sigec-form-link-volver:hover { color: #60a5fa; }
+
+.dark .sigec-info-box            { background: rgba(255,255,255,0.03); border-color: #374151; border-left-color: #3b82f6; }
+.dark .sigec-info-box .title     { color: #60a5fa; }
+.dark .sigec-info-box .main-text { color: #f8fafc; }
+.dark .sigec-info-box .date-text { color: #f87171; }
+
+.dark .sigec-valor-box                    { background: rgba(255,255,255,0.02); border-color: #3b82f6; }
+.dark .sigec-valor-box label              { color: #e2e8f0; }
+.dark .sigec-valor-box input[type="text"] { color: #f8fafc; border-bottom-color: #475569; }
+.dark .sigec-valor-box input[type="text"]:focus { border-bottom-color: #3b82f6; }
+
+.dark .sigec-doc-item        { background: rgba(255,255,255,0.02); border-color: #475569; }
+.dark .sigec-doc-item:hover  { border-color: #3b82f6; background: rgba(59,130,246,0.05); }
+.dark .sigec-doc-item strong { color: #e2e8f0; }
+.dark .sigec-doc-item small  { color: #94a3b8; }
+.dark .sigec-doc-item .icon  { color: #60a5fa; }
+
+
+/* ==========================================================================
+   9. RESPONSIVE
+   ========================================================================== */
+
+/* Catálogo en móvil */
+@media (max-width: 768px) {
+    .sigec-tarjeta { flex-direction: column; align-items: flex-start; }
+    .sigec-acciones { width: 100%; flex-direction: column; }
+    .sigec-btn-detalles, .sigec-btn-participar { width: 100%; }
+    .sigec-meta-inferior { flex-direction: column; gap: 10px; align-items: flex-start; }
+}
+
+/* Acceso: dos columnas en escritorio */
+@media (min-width: 768px) {
+    .sigec-auth-box { flex-direction: row; }
+    .sigec-auth-col-login { border-bottom: none; border-right: 1px solid #cbd5e1; max-width: 40%; }
+}
+
