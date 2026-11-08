@@ -46,9 +46,9 @@ add_action( 'init', 'sigec_registrar_cpt_convocatorias' );
 
 
 
-/**
- * 4. Personalizar las columnas en el listado de Convocatorias
- */
+
+ //Personalizar las columnas en el listado de Convocatorias
+
 function sigec_columnas_personalizadas_convocatoria( $columns ) {
     $nuevas_columnas = array();
     $nuevas_columnas['cb'] = $columns['cb']; 
@@ -193,7 +193,8 @@ function sigec_cargar_plantilla_individual( $template ) {
 }
 add_filter( 'single_template', 'sigec_cargar_plantilla_individual' );
 
-// 7. Inyectar shorcode automaticamente al activar el plugin.
+// 6. Inyectar shorcode automaticamente al activar el plugin.
+
 function sigec_inyectar_shortcode_activacion() {
     // Busca la página que el administrador creó
     $pagina = get_page_by_title( 'Portal de Contratación' );
@@ -227,3 +228,6 @@ require_once plugin_dir_path( __FILE__ ) . 'admin/admin-drive.php';
 
 // AGREGAR EL METABOX EN EL POST TYPE CONVOCATORIA
 require_once plugin_dir_path( __FILE__ ) . 'admin/admin-metabox.php';
+
+//Comprobar y aceptar al proveedor
+require_once plugin_dir_path( __FILE__ ) . 'admin/class-sigec-proveedores.php';

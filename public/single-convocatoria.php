@@ -94,11 +94,54 @@ while ( have_posts() ) : the_post();
             font-size: 16px;
         }
 
+        /* Caja de Anexos y Pliegos */
+        .sigec-anexos-box {
+            margin-top: 35px; 
+            padding: 25px; 
+            background-color: #f0fdfa; /* Un tono verde agua muy sutil e institucional */
+            border-left: 4px solid #0d9488; 
+            border-radius: 6px;
+        }
+        .sigec-anexos-title {
+            margin: 0 0 10px 0; 
+            color: #0f766e; 
+            font-size: 1.3rem; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .sigec-anexos-texto {
+            margin: 0 0 20px 0; 
+            color: #115e59; 
+            font-size: 16px;
+        }
+        .sigec-btn-descarga {
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background-color: #0d9488; 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 15px; 
+            transition: background-color 0.2s;
+        }
+        .sigec-btn-descarga:hover { background-color: #0f766e; color: white; }
+        
+       
+
         /* -----------------------------------------------------------
            MODO OSCURO
            ----------------------------------------------------------- */
         .dark .sigec-single-container { color: #EDF2F7; }
         .dark .sigec-single-header { border-bottom-color: #374151; }
+        /* Anexos en Modo Oscuro */
+        .dark .sigec-anexos-box { background-color: rgba(13, 148, 136, 0.1) !important; border-left-color: #14b8a6 !important; }
+        .dark .sigec-anexos-title { color: #2dd4bf !important; }
+        .dark .sigec-anexos-texto { color: #ccfbf1 !important; }
         
         /* Caja de metas más contrastante en modo oscuro */
         .dark .sigec-single-meta { 
@@ -124,6 +167,9 @@ while ( have_posts() ) : the_post();
         .dark .sigec-monto { color: #3b82f6; }
         .dark .sigec-btn-volver { color: #9ca3af; }
         .dark .sigec-btn-volver:hover { color: #60a5fa; }
+        .dark .sigec-form-container { background-color: rgba(255, 255, 255, 0.05) !important; border-color: #374151 !important; }
+        .dark .sigec-form-container input[type="text"] { background-color: #1f2937; color: #f8fafc; border-color: #475569; }
+
     </style>
 
     
@@ -154,7 +200,7 @@ while ( have_posts() ) : the_post();
             </div>
         </div>
 
-        <!-- Contenido y Requisitos -->
+     <!-- Contenido y Requisitos -->
         <div class="sigec-single-content">
             <h3 style="font-size: 1.6rem; margin-bottom: 25px; color: inherit; font-weight: 700;">Descripción y Requisitos Técnicos</h3>
             <?php 
@@ -163,11 +209,30 @@ while ( have_posts() ) : the_post();
             ?>
         </div>
 
-        <!-- Zona reservada para el Hito 2 -->
-        <div id="ofertas" style="margin-top: 70px; padding-top: 40px; border-top: 2px dashed #cbd5e1;">
-            <h3 style="font-size: 1.8rem; margin-bottom: 15px; color: inherit; font-weight: 700;">Recepción de Ofertas</h3>
-            <p class="sigec-ofertas-texto">El formulario seguro de recepción de propuestas se habilitará en la siguiente fase de desarrollo.</p>
-        </div>
+       <!-- ========================================== -->
+        <!-- TERCER BLOQUE: CAJA DE DOCUMENTOS OFICIALES -->
+        <!-- ========================================== -->
+        <?php
+        $enlace_pliego = get_post_meta( $post_id, '_sigec_enlace_drive', true ); 
+        
+        if ( ! empty( $enlace_pliego ) ) :
+        ?>
+            <div class="sigec-anexos-box">
+                <h4 class="sigec-anexos-title">
+                    <span class="dashicons dashicons-pdf" style="font-size: 24px; width: 24px; height: 24px;"></span>
+                    Documentos Oficiales
+                </h4>
+                <p class="sigec-anexos-texto">Descargue el pliego de condiciones y los anexos técnicos para conocer todos los detalles, requisitos legales y formatos requeridos para participar en este proceso.</p>
+                
+                <a href="<?php echo esc_url( $enlace_pliego ); ?>" target="_blank" rel="noopener noreferrer" class="sigec-btn-descarga">
+                    <span class="dashicons dashicons-download" style="margin-top: 2px;"></span> Ver pliego de condiciones
+                </a>
+            </div>
+        <?php endif; ?>
+        <!-- ========================================== -->
+
+   
+     
     </div>
 
 <?php 
