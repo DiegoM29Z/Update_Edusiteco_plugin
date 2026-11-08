@@ -16,6 +16,47 @@ class SIGEC_Autenticacion {
 
     public function __construct() {
         add_action( 'template_redirect', array( $this, 'procesar_formularios_acceso' ) );
+        add_action( 'template_redirect', array( $this, 'verificar_control_acceso' ) );
+    }
+
+    /**
+     * Redirecciones de control de acceso seguras (antes de enviar HTML).
+     * Evita el error "headers already sent" que ocurría dentro de los shortcodes.
+     */
+    public function verificar_control_acceso() {
+        if ( is_admin() || wp_is_json_request() ) {
+            return;
+        }
+
+        global $post;
+        if ( ! is_singular() || ! isset( $post->post_content ) ) {
+            return;
+        }
+
+        $logueado = is_user_logged_in();
+
+        // 1. Si ya tiene sesión e ingresa a /acceso-proveedores/ -> va al panel
+        if ( $logueado && has_shortcode( $post->post_content, 'sigec_acceso_proveedores' ) ) {
+            wp_safe_redirect( home_url( '/panel-de-proveedores/' ) );
+            exit;
+        }
+
+        // 2. Si NO tiene sesión e ingresa a /panel-de-proveedores/ -> va al login
+        if ( ! $logueado && has_shortcode( $post->post_content, 'sigec_panel_proveedor' ) ) {
+            wp_safe_redirect( home_url( '/acceso-proveedores/' ) );
+            exit;
+        }
+
+        // 3. Si NO tiene sesión e ingresa a /postulacion/ -> va al login con memoria
+        if ( ! $logueado && has_shortcode( $post->post_content, 'sigec_formulario_postulacion' ) ) {
+            $convocatoria_id = isset( $_GET['convocatoria_id'] ) ? intval( $_GET['convocatoria_id'] ) : 0;
+            $url_login = add_query_arg( array(
+                'redirect_to'     => 'postulacion',
+                'convocatoria_id' => $convocatoria_id,
+            ), home_url( '/acceso-proveedores/' ) );
+            wp_safe_redirect( $url_login );
+            exit;
+        }
     }
 
     /**
@@ -38,14 +79,21 @@ class SIGEC_Autenticacion {
      * A. Registro de un nuevo proveedor.
      */
     private function procesar_registro() {
-        $email = sanitize_email( $_POST['reg_email'] );
+        $email    = sanitize_email( $_POST['reg_email'] );
+        $password = isset( $_POST['reg_password'] ) ? $_POST['reg_password'] : '';
+
+        // Validación de longitud mínima de contraseña en el servidor
+        if ( strlen( $password ) < 8 ) {
+            wp_redirect( add_query_arg( 'error_reg', 'password_corta', remove_query_arg( array( 'exito_reg', 'error_login' ), wp_get_referer() ) ) );
+            exit;
+        }
 
         if ( email_exists( $email ) || username_exists( $email ) ) {
             wp_redirect( add_query_arg( 'error_reg', 'existe', remove_query_arg( array( 'exito_reg', 'error_login' ), wp_get_referer() ) ) );
             exit;
         }
 
-        $user_id = wp_create_user( $email, $_POST['reg_password'], $email );
+        $user_id = wp_create_user( $email, $password, $email );
 
         if ( ! is_wp_error( $user_id ) ) {
             // SOLUCIÓN VULNERABILIDAD: La cuenta nace bloqueada ('pendiente')

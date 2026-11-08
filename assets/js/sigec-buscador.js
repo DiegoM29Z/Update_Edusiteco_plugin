@@ -33,6 +33,7 @@
 
             const data = new URLSearchParams();
             data.append('action', 'sigec_filtrar_convocatorias');
+            data.append('nonce', sigec_ajax.nonce || '');
             data.append('texto', inputTexto.value);
             data.append('estado', selectEstado.value);
 

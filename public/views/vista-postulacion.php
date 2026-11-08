@@ -23,11 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
         <div>
             <span class="title">Información del Proceso Seleccionado</span>
             <p class="main-text"><?php echo esc_html( $titulo ); ?></p>
-            <small style="color: #64748b;">Referencia oficial: SIGEC-<?php echo date( 'Y' ); ?>-<?php echo str_pad( $convocatoria_id, 3, '0', STR_PAD_LEFT ); ?></small>
+            <small style="color: #64748b;">Referencia oficial: SIGEC-<?php echo esc_html( $ano_proceso ); ?>-<?php echo esc_html( str_pad( $convocatoria_id, 3, '0', STR_PAD_LEFT ) ); ?></small>
         </div>
         <div style="text-align: right;">
             <span style="display: block; color: #64748b; font-size: 12px; margin-bottom: 5px;">Fecha Límite de Envío:</span>
-            <span class="date-text"><?php echo $fecha_formateada; ?></span>
+            <span class="date-text"><?php echo esc_html( $fecha_formateada ); ?></span>
         </div>
     </div>
 

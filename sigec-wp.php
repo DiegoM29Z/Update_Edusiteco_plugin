@@ -155,6 +155,8 @@ add_action( 'pre_get_posts', 'sigec_ejecutar_filtro_enlaces' );
 
 // 4. Motor Backend AJAX (Para que el buscador funcione en vivo)
 function sigec_ajax_filtrar_convocatorias() {
+    check_ajax_referer( 'sigec_buscador_nonce', 'nonce' );
+
     $texto_busqueda = isset( $_POST['texto'] ) ? sanitize_text_field( $_POST['texto'] ) : '';
     $estado_filtro  = isset( $_POST['estado'] ) ? sanitize_text_field( $_POST['estado'] ) : 'todas';
     $hoy = current_time( 'Y-m-d\TH:i' );
@@ -185,7 +187,7 @@ add_action( 'wp_ajax_nopriv_sigec_filtrar_convocatorias', 'sigec_ajax_filtrar_co
 // 5. Redirección de la Vista Individual (Single)
 function sigec_cargar_plantilla_individual( $template ) {
     global $post;
-    if ( $post->post_type === 'convocatoria' ) {
+    if ( $post && $post->post_type === 'convocatoria' ) {
         $plugin_template = plugin_dir_path( __FILE__ ) . 'public/single-convocatoria.php';
         if ( file_exists( $plugin_template ) ) return $plugin_template;
     }
@@ -193,11 +195,19 @@ function sigec_cargar_plantilla_individual( $template ) {
 }
 add_filter( 'single_template', 'sigec_cargar_plantilla_individual' );
 
-// 6. Inyectar shorcode automaticamente al activar el plugin.
+// 6. Inyectar shortcode automáticamente al activar el plugin.
 
 function sigec_inyectar_shortcode_activacion() {
-    // Busca la página que el administrador creó
-    $pagina = get_page_by_title( 'Portal de Contratación' );
+    // Busca la página que el administrador creó (sin usar get_page_by_title, deprecada en WP 6.2+)
+    $paginas = get_posts( array(
+        'post_type'              => 'page',
+        'title'                  => 'Portal de Contratación',
+        'post_status'            => 'all',
+        'numberposts'            => 1,
+        'update_post_term_cache' => false,
+        'update_post_meta_cache' => false,
+    ) );
+    $pagina = ! empty( $paginas ) ? $paginas[0] : null;
     
     // Si la página existe, revisamos su contenido
     if ( $pagina ) {
@@ -278,7 +288,8 @@ function sigec_encolar_assets_publicos() {
         true
     );
     wp_localize_script( 'sigec-buscador', 'sigec_ajax', array(
-        'url' => admin_url( 'admin-ajax.php' ),
+        'url'   => admin_url( 'admin-ajax.php' ),
+        'nonce' => wp_create_nonce( 'sigec_buscador_nonce' ),
     ) );
 
     if ( sigec_pagina_tiene_shortcode( sigec_shortcodes_publicos() ) ) {

@@ -118,14 +118,9 @@ function sigec_generar_html_tarjetas( $query, $hoy ) {
 /* ==============================================================
  * 2. SHORTCODE: ACCESO DE PROVEEDORES (Login / Registro)
  * Uso: [sigec_acceso_proveedores]
- * El procesamiento de los formularios está en includes/class-sigec-auth.php
+ * El procesamiento y redirecciones están en includes/class-sigec-auth.php
  * ============================================================== */
 function sigec_renderizar_acceso_proveedores() {
-    if ( is_user_logged_in() && ! is_admin() && ! wp_is_json_request() ) {
-        wp_safe_redirect( home_url( '/panel-de-proveedores/' ) );
-        exit;
-    }
-
     sigec_asegurar_assets();
 
     // Leer mensajes desde la URL (los agrega SIGEC_Autenticacion)
@@ -134,9 +129,13 @@ function sigec_renderizar_acceso_proveedores() {
     if ( isset( $_GET['exito_reg'] ) ) {
         $mensaje_registro = '¡Registro exitoso! Tu cuenta está en revisión. La institución validará tu NIT para habilitar tu acceso.';
         $tipo_mensaje     = 'exito';
-    } elseif ( isset( $_GET['error_reg'] ) && $_GET['error_reg'] == 'existe' ) {
-        $mensaje_registro = 'Ese correo ya está registrado. Por favor inicia sesión.';
-        $tipo_mensaje     = 'error';
+    } elseif ( isset( $_GET['error_reg'] ) ) {
+        if ( $_GET['error_reg'] === 'password_corta' ) {
+            $mensaje_registro = 'La contraseña debe tener mínimo 8 caracteres.';
+        } elseif ( $_GET['error_reg'] === 'existe' ) {
+            $mensaje_registro = 'Ese correo ya está registrado. Por favor inicia sesión.';
+        }
+        $tipo_mensaje = 'error';
     }
 
     $mensaje_login = '';
@@ -160,12 +159,11 @@ add_shortcode( 'sigec_acceso_proveedores', 'sigec_renderizar_acceso_proveedores'
 /* ==============================================================
  * 3. SHORTCODE: PANEL DEL PROVEEDOR (DASHBOARD)
  * Uso: [sigec_panel_proveedor]
+ * El control de acceso está en includes/class-sigec-auth.php
  * ============================================================== */
 function sigec_renderizar_panel_proveedor() {
-    // Si NO está logueado, y no estamos en el editor de bloques (JSON request) o admin
-    if ( ! is_user_logged_in() && ! is_admin() && ! wp_is_json_request() ) {
-        wp_safe_redirect( home_url( '/acceso-proveedores/' ) );
-        exit;
+    if ( ! is_user_logged_in() ) {
+        return '<p style="padding: 40px; text-align: center;">Debe <a href="' . esc_url( home_url( '/acceso-proveedores/' ) ) . '">iniciar sesión</a> para acceder a su panel.</p>';
     }
 
     sigec_asegurar_assets();
@@ -185,12 +183,11 @@ add_shortcode( 'sigec_panel_proveedor', 'sigec_renderizar_panel_proveedor' );
 /* ==============================================================
  * 4. SHORTCODE: FORMULARIO DE POSTULACIÓN
  * Uso: [sigec_formulario_postulacion]
+ * El control de acceso está en includes/class-sigec-auth.php
  * ============================================================== */
 function sigec_renderizar_formulario_postulacion() {
-    // Seguridad: Redirigir si no está logueado
-    if ( ! is_user_logged_in() && ! is_admin() && ! wp_is_json_request() ) {
-        wp_safe_redirect( home_url( '/acceso-proveedores/' ) );
-        exit;
+    if ( ! is_user_logged_in() ) {
+        return '<p style="padding: 40px; text-align: center;">Debe <a href="' . esc_url( home_url( '/acceso-proveedores/' ) ) . '">iniciar sesión</a> para participar en una convocatoria.</p>';
     }
 
     // Obtener el ID de la convocatoria desde la URL
@@ -206,6 +203,7 @@ function sigec_renderizar_formulario_postulacion() {
 
     return sigec_cargar_vista( 'vista-postulacion', array(
         'convocatoria_id'  => $convocatoria_id,
+        'ano_proceso'      => get_the_date( 'Y', $convocatoria_id ),
         'titulo'           => get_the_title( $convocatoria_id ),
         'fecha_formateada' => $fecha_cierre ? date_i18n( 'd \d\e F, Y - h:i A', strtotime( $fecha_cierre ) ) : 'No definida',
     ) );

@@ -182,8 +182,8 @@ while ( have_posts() ) : the_post();
         <!-- Encabezado y Título -->
         <div class="sigec-single-header">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                <span style="color: #6b7280; font-weight: 600; font-size: 14px;">PROCESO: SIGEC-<?php echo date('Y'); ?>-<?php echo str_pad($post_id, 3, "0", STR_PAD_LEFT); ?></span>
-                <span class="sigec-badge <?php echo $clase_badge; ?>"><?php echo $estado; ?></span>
+                <span style="color: #6b7280; font-weight: 600; font-size: 14px;">PROCESO: SIGEC-<?php echo esc_html( get_the_date( 'Y', $post_id ) ); ?>-<?php echo esc_html( str_pad( $post_id, 3, '0', STR_PAD_LEFT ) ); ?></span>
+                <span class="sigec-badge <?php echo esc_attr( $clase_badge ); ?>"><?php echo esc_html( $estado ); ?></span>
             </div>
             
             <h1 style="font-size: 2.8rem; font-weight: 800; margin: 0; color: inherit; line-height: 1.2;"><?php the_title(); ?></h1>

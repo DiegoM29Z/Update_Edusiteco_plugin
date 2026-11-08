@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <p class="desc">Cree su perfil para postular propuestas oficiales.</p>
 
             <?php if ( $mensaje_registro ) : ?>
-                <div class="sigec-msg <?php echo $tipo_mensaje; ?>"><?php echo esc_html( $mensaje_registro ); ?></div>
+                <div class="sigec-msg <?php echo esc_attr( $tipo_mensaje ); ?>"><?php echo esc_html( $mensaje_registro ); ?></div>
             <?php endif; ?>
 
             <form method="POST" action="">

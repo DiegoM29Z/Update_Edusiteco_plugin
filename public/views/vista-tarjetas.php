@@ -19,42 +19,42 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div class="sigec-tarjeta">
         <div class="sigec-tarjeta-info">
             <div class="sigec-meta-superior">
-                <span class="sigec-proceso-id">PROCESO: SIGEC-<?php echo date( 'Y' ); ?>-<?php echo str_pad( $t['post_id'], 3, '0', STR_PAD_LEFT ); ?></span>
-                <span class="sigec-badge <?php echo $t['clase_badge']; ?>"><?php echo $t['estado']; ?></span>
+                <span class="sigec-proceso-id">PROCESO: SIGEC-<?php echo esc_html( $t['ano_proceso'] ); ?>-<?php echo esc_html( str_pad( $t['post_id'], 3, '0', STR_PAD_LEFT ) ); ?></span>
+                <span class="sigec-badge <?php echo esc_attr( $t['clase_badge'] ); ?>"><?php echo esc_html( $t['estado'] ); ?></span>
             </div>
-            <h2 class="sigec-titulo-conv"><?php echo $t['titulo']; ?></h2>
+            <h2 class="sigec-titulo-conv"><?php echo esc_html( $t['titulo'] ); ?></h2>
 
             <div class="sigec-meta-inferior">
                 <div class="sigec-meta-item">
                     <span class="dashicons dashicons-calendar-alt" style="font-size: 16px; width: 16px; height: 16px;"></span>
-                    <span>Fecha de Cierre: <strong><?php echo $t['fecha_formateada']; ?></strong></span>
+                    <span>Fecha de Cierre: <strong><?php echo esc_html( $t['fecha_formateada'] ); ?></strong></span>
                 </div>
                 <div class="sigec-meta-item">
                     <span class="dashicons dashicons-money-alt" style="font-size: 16px; width: 16px; height: 16px;"></span>
-                    <span>Presupuesto Oficial: <span class="sigec-monto"><?php echo $t['presupuesto_formateado']; ?></span></span>
+                    <span>Presupuesto Oficial: <span class="sigec-monto"><?php echo esc_html( $t['presupuesto_formateado'] ); ?></span></span>
                 </div>
             </div>
         </div>
 
         <!-- Botones Separados -->
         <div class="sigec-acciones">
-            <a href="<?php echo $t['permalink']; ?>" class="sigec-btn-detalles">Ver Detalles</a>
+            <a href="<?php echo esc_url( $t['permalink'] ); ?>" class="sigec-btn-detalles">Ver Detalles</a>
 
             <?php if ( $t['estado'] === 'Abierta' ) : ?>
                 <?php if ( $t['logueado'] ) : ?>
                     <!-- Con sesión: va directo al formulario de postulación -->
-                    <a href="<?php echo $t['url_postulacion']; ?>" class="<?php echo $t['clase_btn_participar']; ?>">
+                    <a href="<?php echo esc_url( $t['url_postulacion'] ); ?>" class="<?php echo esc_attr( $t['clase_btn_participar'] ); ?>">
                         <?php echo $t['texto_btn_participar']; ?>
                     </a>
                 <?php else : ?>
                     <!-- Sin sesión: va al login CON MEMORIA de la convocatoria -->
-                    <a href="<?php echo $t['url_login']; ?>" class="<?php echo $t['clase_btn_participar']; ?>">
+                    <a href="<?php echo esc_url( $t['url_login'] ); ?>" class="<?php echo esc_attr( $t['clase_btn_participar'] ); ?>">
                         Iniciar Sesión para Participar
                     </a>
                 <?php endif; ?>
             <?php else : ?>
                 <!-- Convocatoria cerrada -->
-                <a href="#" class="<?php echo $t['clase_btn_participar']; ?>" tabindex="-1">
+                <a href="#" class="<?php echo esc_attr( $t['clase_btn_participar'] ); ?>" tabindex="-1">
                     <?php echo $t['texto_btn_participar']; ?>
                 </a>
             <?php endif; ?>
