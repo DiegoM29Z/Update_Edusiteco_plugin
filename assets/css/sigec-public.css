@@ -439,6 +439,80 @@ input.sigec-input-busqueda:focus,
 .sigec-info-item label { display: block; font-size: 12px; font-weight: 700; color: #0a4b9c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 .sigec-info-item span  { font-size: 18px; color: #1e293b; font-weight: 600; display: block; }
 
+/* Tabla de propuestas enviadas (Panel del Proveedor) */
+.sigec-propuestas-tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+.sigec-propuestas-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+.sigec-propuestas-tabla thead tr {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+.sigec-propuestas-tabla th {
+    padding: 14px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.sigec-propuestas-tabla td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+.sigec-propuestas-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+.sigec-tabla-titulo {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+}
+.sigec-tabla-fecha {
+    font-size: 14px;
+    color: #64748b;
+    white-space: nowrap;
+}
+.sigec-tabla-valor {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+}
+
+/* Badges de estado de la propuesta (En revisión, Adjudicada, Rechazada) */
+.sigec-estado-pill {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.sigec-estado-pill.en-revision {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+.sigec-estado-pill.adjudicada {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+.sigec-estado-pill.rechazada {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
 
 /* ==========================================================================
    7. FORMULARIO DE POSTULACIÓN
@@ -593,6 +667,16 @@ input.sigec-input-busqueda:focus,
 .dark .sigec-info-item label        { color: #60a5fa; }
 .dark .sigec-btn-portal             { background: #2563eb; border-color: #2563eb; color: #ffffff !important; }
 .dark .sigec-btn-portal:hover       { background: #1d4ed8; border-color: #1d4ed8; }
+.dark .sigec-propuestas-tabla-wrap        { border-color: #374151; }
+.dark .sigec-propuestas-tabla thead tr    { background-color: rgba(255,255,255,0.04); border-bottom-color: #374151; }
+.dark .sigec-propuestas-tabla th          { color: #94a3b8; }
+.dark .sigec-propuestas-tabla td          { border-bottom-color: #374151; }
+.dark .sigec-tabla-titulo,
+.dark .sigec-tabla-valor                  { color: #f8fafc; }
+.dark .sigec-tabla-fecha                  { color: #cbd5e1; }
+.dark .sigec-estado-pill.en-revision      { background-color: rgba(37, 99, 235, 0.15); color: #60a5fa; border-color: rgba(96, 165, 250, 0.35); }
+.dark .sigec-estado-pill.adjudicada       { background-color: rgba(22, 163, 74, 0.15); color: #4ade80; border-color: rgba(74, 222, 128, 0.35); }
+.dark .sigec-estado-pill.rechazada        { background-color: rgba(220, 38, 38, 0.15); color: #f87171; border-color: rgba(248, 113, 113, 0.35); }
 
 /* --- Formulario de postulación --- */
 .dark .sigec-form-wrapper p.subtitle,
