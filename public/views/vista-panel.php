@@ -57,20 +57,19 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
     </div>
 
-    <div class="sigec-dash-card">
-        <h3><span class="dashicons dashicons-portfolio" style="color: #0a4b9c; width: 24px; height: 24px; font-size: 24px;"></span> Mis Propuestas Enviadas</h3>
-        <?php
-        $mis_propuestas = get_posts( array(
-            'post_type'   => 'propuesta',
-            'post_status' => 'publish',
-            'author'      => $current_user->ID,
-            'numberposts' => -1,
-            'orderby'     => 'date',
-            'order'       => 'DESC',
-        ) );
+    <h3 class="sigec-section-title"><span class="dashicons dashicons-portfolio" style="color: #0a4b9c; width: 24px; height: 24px; font-size: 24px;"></span> Mis Propuestas Enviadas</h3>
+    <?php
+    $mis_propuestas = get_posts( array(
+        'post_type'   => 'propuesta',
+        'post_status' => 'publish',
+        'author'      => $current_user->ID,
+        'numberposts' => -1,
+        'orderby'     => 'date',
+        'order'       => 'DESC',
+    ) );
 
-        if ( ! empty( $mis_propuestas ) ) : ?>
-            <div class="sigec-propuestas-tabla-wrap">
+    if ( ! empty( $mis_propuestas ) ) : ?>
+        <div class="sigec-propuestas-tabla-wrap">
                 <table class="sigec-propuestas-tabla">
                     <thead>
                         <tr>
@@ -137,17 +136,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-            </div>
-        <?php else :
-        ?>
-            <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 40px; text-align: center; border-radius: 6px;" class="dark:bg-gray-800 dark:border-gray-700">
-                <span class="dashicons dashicons-info" style="color: #94a3b8; font-size: 32px; width: 32px; height: 32px; margin-bottom: 15px; display: inline-block;"></span>
-                <p style="color: #64748b; font-size: 16px; margin: 0 0 15px 0;">Aún no ha enviado propuestas económicas.</p>
-                <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" class="sigec-btn-portal" style="margin-top: 0;">
-                    <span class="dashicons dashicons-portfolio"></span> Explorar Convocatorias Abiertas
-                </a>
-            </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php else : ?>
+        <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 40px; text-align: center; border-radius: 6px;" class="dark:bg-gray-800 dark:border-gray-700">
+            <span class="dashicons dashicons-info" style="color: #94a3b8; font-size: 32px; width: 32px; height: 32px; margin-bottom: 15px; display: inline-block;"></span>
+            <p style="color: #64748b; font-size: 16px; margin: 0 0 15px 0;">Aún no ha enviado propuestas económicas.</p>
+            <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" class="sigec-btn-portal" style="margin-top: 0;">
+                <span class="dashicons dashicons-portfolio"></span> Explorar Convocatorias Abiertas
+            </a>
+        </div>
+    <?php endif; ?>
 </div>
 
