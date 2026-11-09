@@ -27,6 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             'archivos_faltantes'   => 'Debe adjuntar los 3 documentos obligatorios (RUT, Cédula y Propuesta Técnica).',
             'formato_invalido'     => 'Formato no permitido. Todos los documentos adjuntos deben ser archivos PDF (.pdf).',
             'drive_desconectado'   => 'El almacenamiento en Google Drive no está disponible en este momento. Contacte a la institución.',
+            'error_carpetas_drive' => 'No fue posible organizar las carpetas en Google Drive. Por favor intente nuevamente.',
             'error_subida_drive'   => 'Ocurrió un error al subir los documentos a Google Drive. Por favor intente nuevamente.',
             'error_bd'             => 'No fue posible registrar la propuesta en la base de datos. Intente nuevamente.',
         );

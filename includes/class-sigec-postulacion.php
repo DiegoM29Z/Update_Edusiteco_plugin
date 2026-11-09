@@ -90,21 +90,49 @@ class SIGEC_Postulacion {
             $this->redirigir_con_error( $convocatoria_id, 'drive_desconectado' );
         }
 
-        // 5. Subir cada uno de los 3 PDFs con nombres dinámicos
+        // 5. Organización automática en carpetas jerárquicas:
+        // 5.1. Carpeta de la Convocatoria: "Convocatoria SIGEC-{ID}" dentro de la carpeta raíz
+        $nombre_carpeta_convocatoria = 'Convocatoria SIGEC-' . $convocatoria_id;
+        $carpeta_convocatoria        = $drive->obtener_o_crear_carpeta( $nombre_carpeta_convocatoria );
+
+        if ( empty( $carpeta_convocatoria['success'] ) || empty( $carpeta_convocatoria['folder_id'] ) ) {
+            $this->redirigir_con_error( $convocatoria_id, 'error_carpetas_drive' );
+        }
+
+        // 5.2. Subcarpeta del Proveedor: "Oferta - {Razon_Social} (NIT: {NIT})" dentro de la convocatoria
+        $razon_social = get_user_meta( $user_id, 'sigec_razon_social', true );
+        if ( empty( $razon_social ) ) {
+            $razon_social = wp_get_current_user()->display_name;
+        }
+
+        $nit = get_user_meta( $user_id, 'sigec_nit', true );
+        if ( empty( $nit ) ) {
+            $nit = 'ID-' . $user_id;
+        }
+
+        $nombre_subcarpeta = sprintf( 'Oferta - %s (NIT: %s)', $razon_social, $nit );
+        $carpeta_proveedor = $drive->obtener_o_crear_carpeta( $nombre_subcarpeta, $carpeta_convocatoria['folder_id'] );
+
+        if ( empty( $carpeta_proveedor['success'] ) || empty( $carpeta_proveedor['folder_id'] ) ) {
+            $this->redirigir_con_error( $convocatoria_id, 'error_carpetas_drive' );
+        }
+
+        $destino_id = $carpeta_proveedor['folder_id'];
+
+        // 6. Subir cada uno de los 3 PDFs a la subcarpeta del proveedor con nombres dinámicos
         $nombre_rut       = "RUT_Prov{$user_id}_Conv{$convocatoria_id}.pdf";
         $nombre_cedula    = "Cedula_Prov{$user_id}_Conv{$convocatoria_id}.pdf";
         $nombre_propuesta = "Propuesta_Prov{$user_id}_Conv{$convocatoria_id}.pdf";
 
-        $subida_rut       = $drive->subir_documento_licitacion( $_FILES['doc_rut']['tmp_name'], $nombre_rut );
-        $subida_cedula    = $drive->subir_documento_licitacion( $_FILES['doc_cedula']['tmp_name'], $nombre_cedula );
-        $subida_propuesta = $drive->subir_documento_licitacion( $_FILES['doc_propuesta']['tmp_name'], $nombre_propuesta );
+        $subida_rut       = $drive->subir_documento_licitacion( $_FILES['doc_rut']['tmp_name'], $nombre_rut, $destino_id );
+        $subida_cedula    = $drive->subir_documento_licitacion( $_FILES['doc_cedula']['tmp_name'], $nombre_cedula, $destino_id );
+        $subida_propuesta = $drive->subir_documento_licitacion( $_FILES['doc_propuesta']['tmp_name'], $nombre_propuesta, $destino_id );
 
         if ( empty( $subida_rut['success'] ) || empty( $subida_cedula['success'] ) || empty( $subida_propuesta['success'] ) ) {
             $this->redirigir_con_error( $convocatoria_id, 'error_subida_drive' );
         }
 
-        // 6. Guardar la propuesta en la base de datos de WordPress
-        $razon_social = get_user_meta( $user_id, 'sigec_razon_social', true ) ?: wp_get_current_user()->display_name;
+        // 7. Guardar la propuesta en la base de datos de WordPress
         $titulo_post  = sprintf( 'Oferta de %s - Convocatoria #%d', $razon_social, $convocatoria_id );
 
         $propuesta_id = wp_insert_post( array(
@@ -124,6 +152,10 @@ class SIGEC_Postulacion {
         update_post_meta( $propuesta_id, 'link_rut', esc_url_raw( $subida_rut['link'] ) );
         update_post_meta( $propuesta_id, 'link_cedula', esc_url_raw( $subida_cedula['link'] ) );
         update_post_meta( $propuesta_id, 'link_propuesta', esc_url_raw( $subida_propuesta['link'] ) );
+        update_post_meta( $propuesta_id, 'drive_carpeta_id', sanitize_text_field( $destino_id ) );
+        if ( ! empty( $carpeta_proveedor['link'] ) ) {
+            update_post_meta( $propuesta_id, 'link_carpeta', esc_url_raw( $carpeta_proveedor['link'] ) );
+        }
 
         // 7. Redirigir al panel del proveedor con mensaje de éxito
         $url_exito = add_query_arg( 'exito_postulacion', '1', home_url( '/panel-de-proveedores/' ) );

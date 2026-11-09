@@ -141,6 +141,9 @@ class SIGEC_Google_Drive {
                 'fields' => 'id, webViewLink',
             ) );
 
+            // Asignar permiso público de lectura a la carpeta
+            $this->asignar_permiso_lectura_publica( $service, $carpeta->id );
+
             return array(
                 'success'   => true,
                 'folder_id' => $carpeta->id,
@@ -154,6 +157,8 @@ class SIGEC_Google_Drive {
 
     /**
      * Sube el documento PDF a la carpeta indicada (o a la carpeta raíz por defecto).
+     * Inmediatamente después de crearlo, asigna permisos de lectura pública (anyone/reader)
+     * para que los enlaces webViewLink puedan abrirse sin requerir inicio de sesión en Google.
      *
      * @param string      $file_path Ruta temporal del archivo en el servidor.
      * @param string      $file_name Nombre final del archivo en Drive.
@@ -184,6 +189,9 @@ class SIGEC_Google_Drive {
                 'fields'     => 'id, webViewLink'
             ) );
 
+            // Asignar permiso de lectura pública para que el enlace abra directamente sin login
+            $this->asignar_permiso_lectura_publica( $service, $file->id );
+
             return array(
                 'success' => true,
                 'file_id' => $file->id,
@@ -192,6 +200,28 @@ class SIGEC_Google_Drive {
 
         } catch ( Exception $e ) {
             return array( 'success' => false, 'error' => $e->getMessage() );
+        }
+    }
+
+    /**
+     * Asigna permisos de lectura pública ('anyone', 'reader') a un archivo o carpeta en Drive.
+     * Esto asegura que los botones 'Ver RUT', 'Ver Cédula' y 'Ver Propuesta' funcionen
+     * para cualquier usuario sin solicitar inicio de sesión en Google.
+     *
+     * @param Google_Service_Drive $service Instancia del servicio de Google Drive.
+     * @param string               $file_id ID del archivo o carpeta.
+     * @return bool
+     */
+    private function asignar_permiso_lectura_publica( $service, $file_id ) {
+        try {
+            $permiso = new Google_Service_Drive_Permission();
+            $permiso->setType( 'anyone' );
+            $permiso->setRole( 'reader' );
+            $service->permissions->create( $file_id, $permiso );
+            return true;
+        } catch ( Exception $e ) {
+            error_log( 'SIGEC Drive - Error al asignar permiso público al elemento ' . $file_id . ': ' . $e->getMessage() );
+            return false;
         }
     }
 }
