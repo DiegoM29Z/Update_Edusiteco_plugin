@@ -58,12 +58,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
 
     <div class="sigec-dash-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-            <h3 style="margin: 0;"><span class="dashicons dashicons-portfolio" style="color: #0a4b9c; width: 24px; height: 24px; font-size: 24px;"></span> Mis Propuestas Enviadas</h3>
-            <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" class="sigec-btn-participar" style="text-decoration: none; padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                <span class="dashicons dashicons-search" style="font-size: 16px; width: 16px; height: 16px;"></span> Explorar Convocatorias
-            </a>
-        </div>
+        <h3><span class="dashicons dashicons-portfolio" style="color: #0a4b9c; width: 24px; height: 24px; font-size: 24px;"></span> Mis Propuestas Enviadas</h3>
         <?php
         $mis_propuestas = get_posts( array(
             'post_type'   => 'propuesta',
