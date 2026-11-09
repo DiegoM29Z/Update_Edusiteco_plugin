@@ -403,6 +403,27 @@ input.sigec-input-busqueda:focus,
 }
 .sigec-btn-logout:hover { background: #b91c1c; color: white; }
 
+.sigec-btn-portal {
+    background: #0a4b9c;
+    color: #ffffff !important;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    border: 1px solid #0a4b9c;
+}
+.sigec-btn-portal:hover {
+    background: #073b7a;
+    border-color: #073b7a;
+    color: #ffffff !important;
+}
+
 /* Tarjetas de información */
 .sigec-dash-card {
     background: white;
@@ -570,6 +591,8 @@ input.sigec-input-busqueda:focus,
 .dark .sigec-dash-card h3,
 .dark .sigec-info-item span         { color: #f8fafc; }
 .dark .sigec-info-item label        { color: #60a5fa; }
+.dark .sigec-btn-portal             { background: #2563eb; border-color: #2563eb; color: #ffffff !important; }
+.dark .sigec-btn-portal:hover       { background: #1d4ed8; border-color: #1d4ed8; }
 
 /* --- Formulario de postulación --- */
 .dark .sigec-form-wrapper p.subtitle,

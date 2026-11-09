@@ -18,9 +18,14 @@ if ( ! defined( 'ABSPATH' ) ) {
             <h1>Mi Panel de Proveedor</h1>
             <p>Gestione el perfil de su empresa y revise el estado de sus licitaciones.</p>
         </div>
-        <a href="<?php echo esc_url( wp_logout_url( home_url( '/panel-de-proveedores/' ) ) ); ?>" class="sigec-btn-logout">
-            <span class="dashicons dashicons-external"></span> Cerrar Sesión
-        </a>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" class="sigec-btn-portal">
+                <span class="dashicons dashicons-arrow-left-alt" style="margin-top: 1px;"></span> Ver Convocatorias Disponibles
+            </a>
+            <a href="<?php echo esc_url( wp_logout_url( home_url( '/panel-de-proveedores/' ) ) ); ?>" class="sigec-btn-logout">
+                <span class="dashicons dashicons-external"></span> Cerrar Sesión
+            </a>
+        </div>
     </div>
 
     <?php if ( isset( $_GET['exito_postulacion'] ) && $_GET['exito_postulacion'] == '1' ) : ?>
@@ -53,7 +58,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
 
     <div class="sigec-dash-card">
-        <h3><span class="dashicons dashicons-portfolio" style="color: #0a4b9c; width: 24px; height: 24px; font-size: 24px;"></span> Mis Propuestas Enviadas</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+            <h3 style="margin: 0;"><span class="dashicons dashicons-portfolio" style="color: #0a4b9c; width: 24px; height: 24px; font-size: 24px;"></span> Mis Propuestas Enviadas</h3>
+            <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" class="sigec-btn-participar" style="text-decoration: none; padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                <span class="dashicons dashicons-search" style="font-size: 16px; width: 16px; height: 16px;"></span> Explorar Convocatorias
+            </a>
+        </div>
         <?php
         $mis_propuestas = get_posts( array(
             'post_type'   => 'propuesta',
@@ -104,7 +114,10 @@ if ( ! defined( 'ABSPATH' ) ) {
         ?>
             <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 40px; text-align: center; border-radius: 6px;" class="dark:bg-gray-800 dark:border-gray-700">
                 <span class="dashicons dashicons-info" style="color: #94a3b8; font-size: 32px; width: 32px; height: 32px; margin-bottom: 15px; display: inline-block;"></span>
-                <p style="color: #64748b; font-size: 16px; margin: 0;">Aún no ha enviado propuestas económicas. Visite el <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" style="color: #0a4b9c; font-weight: 600;">Portal de Contratación</a> para participar.</p>
+                <p style="color: #64748b; font-size: 16px; margin: 0 0 15px 0;">Aún no ha enviado propuestas económicas.</p>
+                <a href="<?php echo esc_url( site_url( '/portal-de-contratacion/' ) ); ?>" class="sigec-btn-portal" style="margin-top: 0;">
+                    <span class="dashicons dashicons-portfolio"></span> Explorar Convocatorias Abiertas
+                </a>
             </div>
         <?php endif; ?>
     </div>
