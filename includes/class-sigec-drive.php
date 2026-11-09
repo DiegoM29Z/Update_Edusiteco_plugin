@@ -156,6 +156,72 @@ class SIGEC_Google_Drive {
     }
 
     /**
+     * Obtiene o crea la carpeta oficial de una Convocatoria en Google Drive
+     * usando el formato: "Convocatoria SIGEC-{ID} - {Título}".
+     * Además guarda y sincroniza el ID de la carpeta en el post_meta `_sigec_carpeta_drive_id`.
+     *
+     * @param int $convocatoria_id ID del post tipo convocatoria.
+     * @return array { success: bool, folder_id?: string, link?: string, error?: string }
+     */
+    public function obtener_o_crear_carpeta_convocatoria( $convocatoria_id ) {
+        if ( ! $this->conectar() ) {
+            return array( 'success' => false, 'error' => 'Plugin no conectado a Google Drive.' );
+        }
+
+        $titulo        = get_the_title( $convocatoria_id );
+        $titulo_limpio = trim( wp_strip_all_tags( html_entity_decode( (string) $titulo, ENT_QUOTES, 'UTF-8' ) ) );
+
+        if ( empty( $titulo_limpio ) || strtolower( $titulo_limpio ) === 'borrador automático' || strtolower( $titulo_limpio ) === 'auto draft' ) {
+            $nombre_carpeta = sprintf( 'Convocatoria SIGEC-%d', $convocatoria_id );
+        } else {
+            $nombre_carpeta = sprintf( 'Convocatoria SIGEC-%d - %s', $convocatoria_id, $titulo_limpio );
+        }
+
+        // 1. Verificar si la convocatoria ya tiene un folder_id guardado en sus metadatos
+        $carpeta_guardada_id = get_post_meta( $convocatoria_id, '_sigec_carpeta_drive_id', true );
+        if ( ! empty( $carpeta_guardada_id ) ) {
+            try {
+                $service   = new Google_Service_Drive( $this->client );
+                $existente = $service->files->get( $carpeta_guardada_id, array(
+                    'fields' => 'id, name, trashed, webViewLink',
+                ) );
+
+                if ( $existente && ! $existente->getTrashed() ) {
+                    // Si el título de la convocatoria cambió en WordPress, sincronizamos el nombre en Drive
+                    if ( $existente->getName() !== $nombre_carpeta ) {
+                        $meta_update = new Google_Service_Drive_DriveFile( array(
+                            'name' => $nombre_carpeta,
+                        ) );
+                        $existente = $service->files->update( $carpeta_guardada_id, $meta_update, array(
+                            'fields' => 'id, name, webViewLink',
+                        ) );
+                    }
+
+                    return array(
+                        'success'   => true,
+                        'folder_id' => $existente->getId(),
+                        'link'      => $existente->getWebViewLink(),
+                    );
+                }
+            } catch ( Exception $e ) {
+                // Si la carpeta fue eliminada en Drive o no está accesible, se buscará o creará nuevamente abajo
+            }
+        }
+
+        // 2. Buscar o crear la carpeta por su nombre completo dentro de la carpeta raíz
+        $resultado = $this->obtener_o_crear_carpeta( $nombre_carpeta );
+
+        if ( ! empty( $resultado['success'] ) && ! empty( $resultado['folder_id'] ) ) {
+            update_post_meta( $convocatoria_id, '_sigec_carpeta_drive_id', sanitize_text_field( $resultado['folder_id'] ) );
+            if ( ! empty( $resultado['link'] ) ) {
+                update_post_meta( $convocatoria_id, '_sigec_carpeta_drive_link', esc_url_raw( $resultado['link'] ) );
+            }
+        }
+
+        return $resultado;
+    }
+
+    /**
      * Sube el documento PDF a la carpeta indicada (o a la carpeta raíz por defecto).
      * Inmediatamente después de crearlo, asigna permisos de lectura pública (anyone/reader)
      * para que los enlaces webViewLink puedan abrirse sin requerir inicio de sesión en Google.

@@ -74,24 +74,30 @@ add_action( 'save_post', 'sigec_guardar_metabox_parametros' );
 function sigec_guardar_metabox_parametros( $post_id ) {
     if ( ! isset( $_POST['sigec_parametros_nonce'] ) || ! wp_verify_nonce( $_POST['sigec_parametros_nonce'], 'sigec_guardar_parametros' ) ) return;
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( wp_is_post_revision( $post_id ) || get_post_status( $post_id ) === 'auto-draft' ) return;
     if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
     // Guardar Presupuesto y Fecha
     if ( isset( $_POST['sigec_presupuesto'] ) ) update_post_meta( $post_id, '_sigec_presupuesto', sanitize_text_field( $_POST['sigec_presupuesto'] ) );
     if ( isset( $_POST['sigec_fecha_cierre'] ) ) update_post_meta( $post_id, '_sigec_fecha_cierre', sanitize_text_field( $_POST['sigec_fecha_cierre'] ) );
 
-    // Lógica para subir a Drive
+    // Crear o sincronizar la carpeta de la Convocatoria en Google Drive ("Convocatoria SIGEC-{ID} - {Título}")
+    require_once plugin_dir_path( __FILE__ ) . '../includes/class-sigec-drive.php';
+    $drive        = new SIGEC_Google_Drive();
+    $carpeta_conv = $drive->obtener_o_crear_carpeta_convocatoria( $post_id );
+    $destino_id   = ! empty( $carpeta_conv['folder_id'] ) ? $carpeta_conv['folder_id'] : null;
+
+    // Subir el Pliego de Condiciones dentro de la carpeta de la Convocatoria
     if ( ! empty( $_FILES['sigec_archivo_drive']['name'] ) && $_FILES['sigec_archivo_drive']['error'] === UPLOAD_ERR_OK ) {
-        require_once plugin_dir_path( __FILE__ ) . '../includes/class-sigec-drive.php';
-        $drive = new SIGEC_Google_Drive();
-        
         $titulo_conv = get_the_title( $post_id );
-        if ( empty($titulo_conv) ) { $titulo_conv = 'Convocatoria_' . $post_id; }
+        if ( empty( $titulo_conv ) ) {
+            $titulo_conv = 'Convocatoria_' . $post_id;
+        }
         $nombre_final = sanitize_file_name( $titulo_conv ) . '_Pliego.pdf';
-        
-        $resultado = $drive->subir_documento_licitacion( $_FILES['sigec_archivo_drive']['tmp_name'], $nombre_final );
-        
-        if ( $resultado['success'] ) {
+
+        $resultado = $drive->subir_documento_licitacion( $_FILES['sigec_archivo_drive']['tmp_name'], $nombre_final, $destino_id );
+
+        if ( ! empty( $resultado['success'] ) ) {
             update_post_meta( $post_id, '_sigec_enlace_drive', esc_url_raw( $resultado['link'] ) );
         }
     }

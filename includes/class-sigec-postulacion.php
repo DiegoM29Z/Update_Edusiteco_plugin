@@ -91,9 +91,8 @@ class SIGEC_Postulacion {
         }
 
         // 5. Organización automática en carpetas jerárquicas:
-        // 5.1. Carpeta de la Convocatoria: "Convocatoria SIGEC-{ID}" dentro de la carpeta raíz
-        $nombre_carpeta_convocatoria = 'Convocatoria SIGEC-' . $convocatoria_id;
-        $carpeta_convocatoria        = $drive->obtener_o_crear_carpeta( $nombre_carpeta_convocatoria );
+        // 5.1. Carpeta de la Convocatoria: "Convocatoria SIGEC-{ID} - {Título}" dentro de la carpeta raíz
+        $carpeta_convocatoria = $drive->obtener_o_crear_carpeta_convocatoria( $convocatoria_id );
 
         if ( empty( $carpeta_convocatoria['success'] ) || empty( $carpeta_convocatoria['folder_id'] ) ) {
             $this->redirigir_con_error( $convocatoria_id, 'error_carpetas_drive' );
