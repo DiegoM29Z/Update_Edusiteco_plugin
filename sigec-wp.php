@@ -101,7 +101,16 @@ function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
             break;
 
         case 'ofertas':
-            echo '<span style="color: #0073aa; font-weight: 500;">0 recibidas</span>';
+            $ofertas = get_posts( array(
+                'post_type'   => 'propuesta',
+                'post_status' => 'publish',
+                'meta_key'    => 'convocatoria_id',
+                'meta_value'  => $post_id,
+                'fields'      => 'ids',
+                'numberposts' => -1,
+            ) );
+            $total_ofertas = count( $ofertas );
+            echo '<span style="color: #0073aa; font-weight: 500;">' . intval( $total_ofertas ) . ' recibidas</span>';
             break;
     }
 }
@@ -315,6 +324,9 @@ add_filter( 'body_class', 'sigec_body_class_catalogo' );
 
 // Motor de autenticación de proveedores (registro y login)
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-sigec-auth.php';
+
+// Procesador de postulaciones y subida a Google Drive
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-sigec-postulacion.php';
 
 // Shortcodes públicos (despachador de vistas)
 require_once plugin_dir_path( __FILE__ ) . 'public/public-shortcodes.php';

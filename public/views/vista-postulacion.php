@@ -19,6 +19,25 @@ if ( ! defined( 'ABSPATH' ) ) {
     <h1>Envío de Propuesta Económica</h1>
     <p class="subtitle">Diligencie la información requerida y cargue los soportes obligatorios para formalizar su participación en este proceso licitatorio.</p>
 
+    <?php if ( isset( $_GET['error_postulacion'] ) ) :
+        $codigo_error  = sanitize_text_field( $_GET['error_postulacion'] );
+        $textos_error  = array(
+            'datos_incompletos'    => 'Por favor ingrese el valor ofertado y complete todos los campos obligatorios.',
+            'convocatoria_cerrada' => 'Esta convocatoria ya ha cerrado y no admite nuevas propuestas.',
+            'archivos_faltantes'   => 'Debe adjuntar los 3 documentos obligatorios (RUT, Cédula y Propuesta Técnica).',
+            'formato_invalido'     => 'Formato no permitido. Todos los documentos adjuntos deben ser archivos PDF (.pdf).',
+            'drive_desconectado'   => 'El almacenamiento en Google Drive no está disponible en este momento. Contacte a la institución.',
+            'error_subida_drive'   => 'Ocurrió un error al subir los documentos a Google Drive. Por favor intente nuevamente.',
+            'error_bd'             => 'No fue posible registrar la propuesta en la base de datos. Intente nuevamente.',
+        );
+        $mensaje_alerta = isset( $textos_error[ $codigo_error ] ) ? $textos_error[ $codigo_error ] : $codigo_error;
+    ?>
+        <div class="sigec-msg error" style="display: flex; align-items: center; gap: 10px;">
+            <span class="dashicons dashicons-warning" style="font-size: 22px; width: 22px; height: 22px;"></span>
+            <span><?php echo esc_html( $mensaje_alerta ); ?></span>
+        </div>
+    <?php endif; ?>
+
     <div class="sigec-info-box">
         <div>
             <span class="title">Información del Proceso Seleccionado</span>

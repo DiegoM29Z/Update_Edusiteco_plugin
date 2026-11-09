@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div class="sigec-tarjeta">
         <div class="sigec-tarjeta-info">
             <div class="sigec-meta-superior">
-                <span class="sigec-proceso-id">PROCESO: SIGEC-<?php echo esc_html( $t['ano_proceso'] ); ?>-<?php echo esc_html( str_pad( $t['post_id'], 3, '0', STR_PAD_LEFT ) ); ?></span>
+                <span class="sigec-proceso-id">PROCESO: SIGEC-<?php echo esc_html( ! empty( $t['ano_proceso'] ) ? $t['ano_proceso'] : get_the_date( 'Y', $t['post_id'] ) ); ?>-<?php echo esc_html( str_pad( $t['post_id'], 3, '0', STR_PAD_LEFT ) ); ?></span>
                 <span class="sigec-badge <?php echo esc_attr( $t['clase_badge'] ); ?>"><?php echo esc_html( $t['estado'] ); ?></span>
             </div>
             <h2 class="sigec-titulo-conv"><?php echo esc_html( $t['titulo'] ); ?></h2>

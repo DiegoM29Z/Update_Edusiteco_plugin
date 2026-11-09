@@ -83,13 +83,14 @@ function sigec_generar_html_tarjetas( $query, $hoy ) {
             $post_id      = get_the_ID();
             $presupuesto  = get_post_meta( $post_id, '_sigec_presupuesto', true );
             $fecha_cierre = get_post_meta( $post_id, '_sigec_fecha_cierre', true );
-
+            $ano_proceso  = get_the_date('Y');
             // Lógica de Abierta/Cerrada
             $estado  = ( $fecha_cierre && $fecha_cierre >= $hoy ) ? 'Abierta' : 'Cerrada';
             $cerrada = ( $estado === 'Cerrada' );
 
             $tarjetas[] = array(
                 'post_id'                => $post_id,
+                'ano_proceso'            => $ano_proceso,
                 'titulo'                 => get_the_title(),
                 'permalink'              => get_permalink(),
                 'estado'                 => $estado,

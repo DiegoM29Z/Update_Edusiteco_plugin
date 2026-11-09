@@ -44,8 +44,8 @@ function sigec_renderizar_pagina_drive() {
     require_once plugin_dir_path( __FILE__ ) . '../includes/class-sigec-drive.php';
     $drive = new SIGEC_Google_Drive();
     
-    // Verificamos si hay una llave guardada
-    $esta_conectado = get_option( 'sigec_google_token' ) ? true : false;
+    // Verificamos si el token guardado realmente es válido y conecta con Google
+    $esta_conectado = $drive->conectar();
     ?>
     <div class="wrap">
         <h1 style="margin-bottom: 20px;">Configuración de Almacenamiento - SIGEC</h1>
