@@ -212,41 +212,80 @@ function sigec_cargar_plantilla_individual( $template ) {
 }
 add_filter( 'single_template', 'sigec_cargar_plantilla_individual' );
 
-// 6. Inyectar shortcode automáticamente al activar el plugin.
+// 6. Auto-crear las páginas necesarias con sus shortcodes al activar el plugin.
 
-function sigec_inyectar_shortcode_activacion() {
-    // Busca la página que el administrador creó (sin usar get_page_by_title, deprecada en WP 6.2+)
-    $paginas = get_posts( array(
-        'post_type'              => 'page',
-        'title'                  => 'Portal de Contratación',
-        'post_status'            => 'all',
-        'numberposts'            => 1,
-        'update_post_term_cache' => false,
-        'update_post_meta_cache' => false,
-    ) );
-    $pagina = ! empty( $paginas ) ? $paginas[0] : null;
-    
-    // Si la página existe, revisamos su contenido
-    if ( $pagina ) {
-        $contenido_actual = $pagina->post_content;
-        $shortcode = '[sigec_convocatorias_abiertas]';
-        
-        // Verificamos si el shortcode ya está adentro para no duplicarlo por error
-        if ( strpos( $contenido_actual, $shortcode ) === false ) {
-            
-            // Si no lo tiene, se lo agregamos al contenido
-            $nuevo_contenido = $contenido_actual . "\n\n" . $shortcode;
-            
-            // Actualizamos la página silenciosamente en la base de datos
-            wp_update_post( array(
-                'ID'           => $pagina->ID,
-                'post_content' => $nuevo_contenido
+/**
+ * Crea automáticamente las 4 páginas del flujo público e inyecta sus shortcodes
+ * cuando se activa el plugin en cualquier instalación de WordPress.
+ */
+function sigec_crear_paginas_por_defecto() {
+    $paginas = array(
+        'portal-de-contratacion' => array(
+            'titulo'    => 'Portal de Contratación',
+            'shortcode' => '[sigec_convocatorias_abiertas]',
+        ),
+        'panel-de-proveedores' => array(
+            'titulo'    => 'Mi Panel de Proveedor',
+            'shortcode' => '[sigec_panel_proveedor]',
+        ),
+        'acceso-proveedores' => array(
+            'titulo'    => 'Acceso a Proveedores',
+            'shortcode' => '[sigec_acceso_proveedores]',
+        ),
+        'postulacion' => array(
+            'titulo'    => 'Envío de Propuesta',
+            'shortcode' => '[sigec_formulario_postulacion]',
+        ),
+    );
+
+    foreach ( $paginas as $slug => $datos ) {
+        // 1. Buscar si ya existe una página con ese slug (en cualquier estado)
+        $paginas_existentes = get_posts( array(
+            'name'           => $slug,
+            'post_type'      => 'page',
+            'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'trash' ),
+            'posts_per_page' => 1,
+        ) );
+
+        if ( ! empty( $paginas_existentes ) ) {
+            $pagina      = $paginas_existentes[0];
+            $actualizar  = array( 'ID' => $pagina->ID );
+            $debe_salvar = false;
+
+            // Si estaba en borrador o papelera, la publicamos
+            if ( $pagina->post_status !== 'publish' ) {
+                $actualizar['post_status'] = 'publish';
+                $debe_salvar               = true;
+            }
+
+            // Si la página existía vacía sin el shortcode, se lo inyectamos
+            if ( strpos( $pagina->post_content, $datos['shortcode'] ) === false ) {
+                $actualizar['post_content'] = trim( $pagina->post_content . "\n\n" . $datos['shortcode'] );
+                $debe_salvar                = true;
+            }
+
+            if ( $debe_salvar ) {
+                wp_update_post( $actualizar );
+            }
+        } else {
+            // 2. Si no existe, la crea automáticamente con su slug y shortcode exactos
+            wp_insert_post( array(
+                'post_title'     => $datos['titulo'],
+                'post_name'      => $slug,
+                'post_content'   => $datos['shortcode'],
+                'post_status'    => 'publish',
+                'post_type'      => 'page',
+                'comment_status' => 'closed',
+                'ping_status'    => 'closed',
             ) );
         }
     }
+
+    // 3. Registrar el CPT y refrescar los enlaces permanentes para evitar errores 404
+    sigec_registrar_cpt_convocatorias();
+    flush_rewrite_rules();
 }
-// Ejecutar esta inyección SOLO cuando se activa el plugin
-register_activation_hook( __FILE__, 'sigec_inyectar_shortcode_activacion' );
+register_activation_hook( __FILE__, 'sigec_crear_paginas_por_defecto' );
 
 // 7. Recursos públicos del frontend (CSS y JS)
 
