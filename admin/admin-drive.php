@@ -49,8 +49,7 @@ function sigec_renderizar_pagina_drive() {
     ?>
     <style>
         .sigec-drive-wrap {
-            max-width: 980px;
-            margin: 25px 20px 40px 0;
+            margin: 25px 20px 40px 2px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
         }
         .sigec-drive-header {

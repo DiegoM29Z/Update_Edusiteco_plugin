@@ -141,8 +141,7 @@ function sigec_ocultar_opciones_visibilidad() {
 
             /* Diseño moderno SIGEC para el listado de Todas las Convocatorias */
             body.edit-php.post-type-convocatoria .wrap {
-                max-width: 1220px;
-                margin-top: 22px;
+                margin: 22px 20px 40px 2px;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
             }
             body.edit-php.post-type-convocatoria .wrap h1.wp-heading-inline {
@@ -167,6 +166,7 @@ function sigec_ocultar_opciones_visibilidad() {
                 border-color: #073b7a !important;
             }
             body.edit-php.post-type-convocatoria .wp-list-table {
+                width: 100% !important;
                 background: #ffffff !important;
                 border: 1px solid #e2e8f0 !important;
                 border-radius: 8px !important;
@@ -176,12 +176,18 @@ function sigec_ocultar_opciones_visibilidad() {
                 margin-top: 10px;
             }
             body.edit-php.post-type-convocatoria .wp-list-table thead th,
-            body.edit-php.post-type-convocatoria .wp-list-table tfoot th {
+            body.edit-php.post-type-convocatoria .wp-list-table thead td.check-column,
+            body.edit-php.post-type-convocatoria .wp-list-table tfoot th,
+            body.edit-php.post-type-convocatoria .wp-list-table tfoot td.check-column {
                 background: #f8fafc !important;
                 border-bottom: 1px solid #e2e8f0 !important;
                 color: #475569 !important;
                 font-weight: 700 !important;
                 font-size: 12px !important;
+                vertical-align: middle !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table thead th:not(.check-column),
+            body.edit-php.post-type-convocatoria .wp-list-table tfoot th:not(.check-column) {
                 padding: 13px 16px !important;
             }
             body.edit-php.post-type-convocatoria .wp-list-table thead th a,
@@ -195,13 +201,17 @@ function sigec_ocultar_opciones_visibilidad() {
             body.edit-php.post-type-convocatoria .wp-list-table tbody tr:hover {
                 background: #f8fafc !important;
             }
-            body.edit-php.post-type-convocatoria .wp-list-table tbody td,
-            body.edit-php.post-type-convocatoria .wp-list-table tbody th.check-column {
+            body.edit-php.post-type-convocatoria .wp-list-table tbody td {
                 padding: 15px 16px !important;
                 border-bottom: 1px solid #f1f5f9 !important;
                 vertical-align: middle !important;
                 font-size: 13px !important;
                 color: #334155 !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table tbody th.check-column {
+                border-bottom: 1px solid #f1f5f9 !important;
+                vertical-align: middle !important;
+                padding: 15px 0 15px 10px !important;
             }
             body.edit-php.post-type-convocatoria .wp-list-table .row-title {
                 color: #0f172a !important;

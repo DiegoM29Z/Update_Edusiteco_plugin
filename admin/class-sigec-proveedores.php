@@ -65,8 +65,7 @@ class SIGEC_Gestion_Proveedores {
         ?>
         <style>
             .sigec-prov-wrap {
-                max-width: 1180px;
-                margin: 25px 20px 40px 0;
+                margin: 25px 20px 40px 2px;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
             }
             .sigec-prov-header {
