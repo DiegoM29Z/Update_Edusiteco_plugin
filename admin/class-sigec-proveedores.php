@@ -44,12 +44,32 @@ class SIGEC_Gestion_Proveedores {
 
         if ( $accion === 'aprobar' ) {
             update_user_meta( $user_id, 'sigec_estado_cuenta', 'aprobado' );
-            // Aquí en un futuro puedes cambiarle el rol de 'subscriber' a 'proveedor'
-            wp_redirect( add_query_arg( 'mensaje', 'aprobado', remove_query_arg( array('action', 'user_id', '_wpnonce') ) ) );
+            wp_redirect( add_query_arg( 'mensaje', 'aprobado', remove_query_arg( array( 'action', 'user_id', '_wpnonce' ) ) ) );
             exit;
         } elseif ( $accion === 'rechazar' ) {
             update_user_meta( $user_id, 'sigec_estado_cuenta', 'rechazado' );
-            wp_redirect( add_query_arg( 'mensaje', 'rechazado', remove_query_arg( array('action', 'user_id', '_wpnonce') ) ) );
+            wp_redirect( add_query_arg( 'mensaje', 'rechazado', remove_query_arg( array( 'action', 'user_id', '_wpnonce' ) ) ) );
+            exit;
+        } elseif ( $accion === 'eliminar' ) {
+            // Protección: nunca permitir eliminar una cuenta de administrador
+            if ( ! user_can( $user_id, 'manage_options' ) ) {
+                require_once ABSPATH . 'wp-admin/includes/user.php';
+
+                // Eliminar también propuestas de prueba asociadas a este usuario (si existen)
+                $propuestas_usuario = get_posts( array(
+                    'post_type'   => 'propuesta',
+                    'author'      => $user_id,
+                    'post_status' => 'any',
+                    'numberposts' => -1,
+                    'fields'      => 'ids',
+                ) );
+                foreach ( $propuestas_usuario as $prop_id ) {
+                    wp_delete_post( $prop_id, true );
+                }
+
+                wp_delete_user( $user_id );
+            }
+            wp_redirect( add_query_arg( 'mensaje', 'eliminado', remove_query_arg( array( 'action', 'user_id', '_wpnonce' ) ) ) );
             exit;
         }
     }
@@ -190,6 +210,68 @@ class SIGEC_Gestion_Proveedores {
                 background: #fee2e2;
                 color: #b91c1c !important;
             }
+            .sigec-btn-prov.eliminar {
+                background: #ffffff;
+                color: #64748b !important;
+                border: 1px solid #cbd5e1;
+                padding: 6px 10px;
+            }
+            .sigec-btn-prov.eliminar:hover {
+                background: #dc2626;
+                color: #ffffff !important;
+                border-color: #dc2626;
+            }
+            .sigec-btn-prov .dashicons {
+                font-size: 15px;
+                width: 15px;
+                height: 15px;
+            }
+            .sigec-nit-links {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-top: 5px;
+                flex-wrap: wrap;
+            }
+            .sigec-btn-nit-verify {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: #eff6ff;
+                color: #1d4ed8 !important;
+                border: 1px solid #bfdbfe;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.15s;
+            }
+            .sigec-btn-nit-verify:hover {
+                background: #dbeafe;
+                color: #1e40af !important;
+            }
+            .sigec-btn-nit-verify .dashicons {
+                font-size: 13px;
+                width: 13px;
+                height: 13px;
+            }
+            .sigec-toast-nit {
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                background: #0f172a;
+                color: #ffffff;
+                padding: 12px 18px;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 600;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                display: none;
+                align-items: center;
+                gap: 8px;
+                z-index: 99999;
+            }
             .sigec-count-pill {
                 background: #e2e8f0;
                 color: #0f172a;
@@ -222,6 +304,11 @@ class SIGEC_Gestion_Proveedores {
                         <span class="dashicons dashicons-warning" style="color: #dc2626;"></span>
                         <span><strong>Acceso restringido.</strong> El estado del proveedor fue actualizado a rechazado.</span>
                     </div>
+                <?php elseif ( $_GET['mensaje'] === 'eliminado' ) : ?>
+                    <div class="sigec-prov-banner alerta">
+                        <span class="dashicons dashicons-trash" style="color: #dc2626;"></span>
+                        <span><strong>Usuario eliminado.</strong> La cuenta y sus registros asociados fueron borrados definitivamente del sistema.</span>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -252,14 +339,28 @@ class SIGEC_Gestion_Proveedores {
                                 } elseif ( $estado === 'rechazado' ) {
                                     $clase_badge = 'rechazado';
                                 }
+
+                                // Extraer NIT base sin guiones ni puntos para pegarlo directo en RUES / DIAN
+                                $partes_nit = explode( '-', (string) $nit );
+                                $nit_limpio = preg_replace( '/[^0-9]/', '', $partes_nit[0] );
                                 ?>
                                 <tr>
                                     <td>
                                         <strong style="color: #0f172a; font-size: 14px; display: block; margin-bottom: 2px;"><?php echo esc_html( $razon_social ); ?></strong>
                                         <span style="color: #64748b; font-size: 12px;">Usuario: <?php echo esc_html( $user->user_login ); ?></span>
                                     </td>
-                                    <td style="font-weight: 600; color: #475569;">
-                                        <?php echo esc_html( $nit ); ?>
+                                    <td style="font-weight: 600; color: #0f172a;">
+                                        <span><?php echo esc_html( $nit ); ?></span>
+                                        <?php if ( ! empty( $nit_limpio ) ) : ?>
+                                            <div class="sigec-nit-links">
+                                                <a href="https://www.rues.org.co/" target="_blank" rel="noopener noreferrer" class="sigec-btn-nit-verify" onclick="sigecCopiarNit('<?php echo esc_js( $nit_limpio ); ?>', 'RUES');" title="Copia el NIT automáticamente y abre el portal oficial RUES (Cámaras de Comercio)">
+                                                    <span class="dashicons dashicons-search"></span> RUES
+                                                </a>
+                                                <a href="https://muisca.dian.gov.co/WebRutMuisca/DefConsultaEstadoRUT.faces" target="_blank" rel="noopener noreferrer" class="sigec-btn-nit-verify" onclick="sigecCopiarNit('<?php echo esc_js( $nit_limpio ); ?>', 'DIAN');" title="Copia el NIT automáticamente y abre la consulta de estado RUT en la DIAN">
+                                                    <span class="dashicons dashicons-shield"></span> DIAN
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                     <td style="color: #334155;">
                                         <?php echo esc_html( $rep_legal ); ?>
@@ -288,6 +389,10 @@ class SIGEC_Gestion_Proveedores {
                                                     Rechazar
                                                 </a>
                                             <?php endif; ?>
+
+                                            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'edit.php?post_type=convocatoria&page=sigec-proveedores&action=eliminar&user_id=' . $user->ID ), 'accion_proveedor_' . $user->ID ) ); ?>" class="sigec-btn-prov eliminar" title="Eliminar usuario definitivamente" onclick="return confirm('¿Está segura de eliminar definitivamente la cuenta de «<?php echo esc_js( $razon_social ); ?>»? Esta acción borrará el usuario del sistema.');">
+                                                <span class="dashicons dashicons-trash"></span> Eliminar
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -302,6 +407,26 @@ class SIGEC_Gestion_Proveedores {
                     </tbody>
                 </table>
             </div>
+
+            <div id="sigec-toast-nit" class="sigec-toast-nit">
+                <span class="dashicons dashicons-yes-alt" style="color: #4ade80;"></span>
+                <span id="sigec-toast-nit-text"></span>
+            </div>
+
+            <script>
+                function sigecCopiarNit(nit, portal) {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(nit);
+                    }
+                    var toast = document.getElementById('sigec-toast-nit');
+                    var text  = document.getElementById('sigec-toast-nit-text');
+                    if (toast && text) {
+                        text.innerText = 'NIT ' + nit + ' copiado al portapapeles. Pégalo (Ctrl+V) en ' + portal + '.';
+                        toast.style.display = 'inline-flex';
+                        setTimeout(function() { toast.style.display = 'none'; }, 4500);
+                    }
+                }
+            </script>
         </div>
         <?php
     }
