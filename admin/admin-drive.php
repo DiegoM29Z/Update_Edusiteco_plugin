@@ -43,46 +43,228 @@ function sigec_procesar_conexion_drive() {
 function sigec_renderizar_pagina_drive() {
     require_once plugin_dir_path( __FILE__ ) . '../includes/class-sigec-drive.php';
     $drive = new SIGEC_Google_Drive();
-    
+
     // Verificamos si el token guardado realmente es válido y conecta con Google
     $esta_conectado = $drive->conectar();
     ?>
-    <div class="wrap">
-        <h1 style="margin-bottom: 20px;">Configuración de Almacenamiento - SIGEC</h1>
-        
+    <style>
+        .sigec-drive-wrap {
+            max-width: 980px;
+            margin: 25px 20px 40px 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        }
+        .sigec-drive-header {
+            margin-bottom: 22px;
+        }
+        .sigec-drive-title {
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            color: #0f172a;
+            margin: 0 0 6px 0 !important;
+            padding: 0 !important;
+            line-height: 1.2;
+        }
+        .sigec-drive-subtitle {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .sigec-drive-banner {
+            border-radius: 6px;
+            padding: 13px 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .sigec-drive-banner.exito {
+            background: #dcfce7;
+            border: 1px solid #4ade80;
+            color: #166534;
+        }
+        .sigec-drive-banner.alerta {
+            background: #fefce8;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+        .sigec-drive-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 26px 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+        .sigec-drive-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .sigec-drive-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+        .sigec-drive-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .sigec-drive-pill.conectado {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .sigec-drive-pill.desconectado {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .sigec-drive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 18px 0 22px 0;
+        }
+        .sigec-drive-meta-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .sigec-drive-meta-val {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .sigec-btn-drive-connect {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0a4b9c;
+            color: #ffffff !important;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .sigec-btn-drive-connect:hover {
+            background: #073b7a;
+        }
+        .sigec-btn-drive-disconnect {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef2f2;
+            color: #dc2626 !important;
+            border: 1px solid #fecaca;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .sigec-btn-drive-disconnect:hover {
+            background: #fee2e2;
+            color: #b91c1c !important;
+        }
+    </style>
+
+    <div class="wrap sigec-drive-wrap">
+        <div class="sigec-drive-header">
+            <h1 class="sigec-drive-title">Configuración de Almacenamiento en la Nube — SIGEC</h1>
+            <p class="sigec-drive-subtitle">Gestione la vinculación con Google Drive para almacenar automáticamente pliegos y ofertas licitatorias (RNF 01).</p>
+        </div>
+
         <?php if ( isset( $_GET['estado'] ) && $_GET['estado'] === 'conectado' ) : ?>
-            <div class="notice notice-success is-dismissible"><p><strong>¡Excelente!</strong> La cuenta de Google Drive se ha vinculado correctamente.</p></div>
+            <div class="sigec-drive-banner exito">
+                <span class="dashicons dashicons-yes-alt" style="color: #16a34a;"></span>
+                <span><strong>¡Excelente!</strong> La cuenta de Google Drive se ha vinculado correctamente.</span>
+            </div>
         <?php endif; ?>
 
         <?php if ( isset( $_GET['estado'] ) && $_GET['estado'] === 'desconectado' ) : ?>
-            <div class="notice notice-warning is-dismissible"><p>La cuenta ha sido desconectada. El sistema no podrá subir archivos hasta que vincules una nueva.</p></div>
+            <div class="sigec-drive-banner alerta">
+                <span class="dashicons dashicons-warning" style="color: #d97706;"></span>
+                <span><strong>Cuenta desconectada.</strong> El sistema no podrá subir nuevos documentos hasta que vincule una cuenta.</span>
+            </div>
         <?php endif; ?>
 
-        <div style="background: #fff; padding: 25px; border: 1px solid #c3c4c7; border-radius: 4px; max-width: 600px; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
-            <h2 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Estado de la conexión en la nube</h2>
-            
+        <div class="sigec-drive-card">
+            <div class="sigec-drive-card-top">
+                <h2 class="sigec-drive-card-title">
+                    <span class="dashicons dashicons-cloud" style="color: #0a4b9c; font-size: 22px; width: 22px; height: 22px;"></span>
+                    Estado de la Conexión en la Nube
+                </h2>
+                <?php if ( $esta_conectado ) : ?>
+                    <span class="sigec-drive-pill conectado">
+                        <span class="dashicons dashicons-yes-alt" style="font-size: 15px; width: 15px; height: 15px;"></span>
+                        Conectado y Operativo
+                    </span>
+                <?php else : ?>
+                    <span class="sigec-drive-pill desconectado">
+                        <span class="dashicons dashicons-warning" style="font-size: 15px; width: 15px; height: 15px;"></span>
+                        Desconectado
+                    </span>
+                <?php endif; ?>
+            </div>
+
             <?php if ( $esta_conectado ) : ?>
-                <div style="display: flex; align-items: center; margin: 20px 0;">
-                    <span class="dashicons dashicons-yes-alt" style="color: #46b450; font-size: 30px; width: 30px; height: 30px;"></span>
-                    <p style="font-size: 16px; margin: 0 0 0 10px;">
-                        <strong style="color: #46b450;">Conectado y operativo</strong>.
-                    </p>
+                <p style="color: #475569; font-size: 14px; margin: 0;">
+                    El sistema cuenta con permisos OAuth 2.0 activos para gestionar documentos y asignar permisos de lectura pública. Las convocatorias y propuestas de los proveedores se organizan automáticamente en carpetas jerárquicas.
+                </p>
+
+                <div class="sigec-drive-grid">
+                    <div>
+                        <span class="sigec-drive-meta-label">PROVEEDOR DE NUBE</span>
+                        <span class="sigec-drive-meta-val">Google Drive API v3</span>
+                    </div>
+                    <div>
+                        <span class="sigec-drive-meta-label">ESTRUCTURA JERÁRQUICA</span>
+                        <span class="sigec-drive-meta-val">Convocatoria SIGEC-{ID} &rarr; Ofertas</span>
+                    </div>
+                    <div>
+                        <span class="sigec-drive-meta-label">PERMISOS DE ARCHIVOS</span>
+                        <span class="sigec-drive-meta-val" style="color: #16a34a;">Lectura Pública Automática</span>
+                    </div>
                 </div>
-                <p style="color: #666; margin-bottom: 25px;">El sistema tiene permisos activos para gestionar documentos. Las convocatorias y licitaciones se subirán a la nube de forma automática.</p>
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=sigec-drive-settings&desconectar=1' ) ); ?>" class="button button-secondary" onclick="return confirm('¿Seguro que deseas desconectar la cuenta? Se detendrá la subida de nuevos documentos.');">Desconectar cuenta actual</a>
+
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=sigec-drive-settings&desconectar=1' ) ); ?>" class="sigec-btn-drive-disconnect" onclick="return confirm('¿Seguro que deseas desconectar la cuenta? Se detendrá la subida de nuevos documentos.');">
+                    <span class="dashicons dashicons-dismiss" style="font-size: 16px; width: 16px; height: 16px;"></span>
+                    Desconectar cuenta actual
+                </a>
             <?php else : ?>
-                <div style="display: flex; align-items: center; margin: 20px 0;">
-                    <span class="dashicons dashicons-warning" style="color: #dc3232; font-size: 30px; width: 30px; height: 30px;"></span>
-                    <p style="font-size: 16px; margin: 0 0 0 10px;">
-                        <strong style="color: #dc3232;">Desconectado</strong>.
-                    </p>
-                </div>
-                <p style="color: #666; margin-bottom: 25px;">Para garantizar que el servidor del colegio no se sature (Requisito RNF 01), debes autorizar una cuenta de Google donde se almacenarán los archivos.</p>
+                <p style="color: #475569; font-size: 14px; margin: 0 0 20px 0;">
+                    Para garantizar que el servidor de la institución no se sature con archivos PDF pesados (Requisito RNF 01), autorice la cuenta institucional de Google Drive donde se almacenarán los pliegos y ofertas.
+                </p>
                 <?php $auth_url = $drive->obtener_url_autorizacion(); ?>
-              <a href="<?php echo esc_url( $auth_url ); ?>" class="button button-primary button-large" style="background: #1a73e8; border-color: #1a73e8; display: inline-flex; align-items: center; gap: 8px; padding: 0 15px; height: 32px; text-decoration: none;">
-    <span class="dashicons dashicons-google" style="font-size: 18px; width: 18px; height: 18px; line-height: 1; margin: 0; display: inline-flex; align-items: center; justify-content: center;"></span>
-    <span style="line-height: 1; padding-top: 2px;">Vincular con Google Drive</span>
-</a>
+                <a href="<?php echo esc_url( $auth_url ); ?>" class="sigec-btn-drive-connect">
+                    <span class="dashicons dashicons-google" style="font-size: 18px; width: 18px; height: 18px;"></span>
+                    <span>Vincular con Google Drive</span>
+                </a>
             <?php endif; ?>
         </div>
     </div>

@@ -69,32 +69,37 @@ function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
     switch ( $column ) {
         case 'presupuesto':
             $presupuesto = get_post_meta( $post_id, '_sigec_presupuesto', true );
-            echo $presupuesto ? '$' . number_format( $presupuesto, 0, ',', '.' ) . ' COP' : '—';
+            $num         = preg_replace( '/[^0-9]/', '', (string) $presupuesto );
+            echo $num !== ''
+                ? '<span style="color: #16a34a; font-weight: 700; font-size: 13px;">$' . esc_html( number_format( (float) $num, 0, ',', ',' ) ) . ' COP</span>'
+                : '<span style="color: #94a3b8;">—</span>';
             break;
 
         case 'fecha_cierre':
             $fecha = get_post_meta( $post_id, '_sigec_fecha_cierre', true );
-            echo $fecha ? date( 'd-m-Y', strtotime( $fecha ) ) : '—';
+            echo $fecha
+                ? '<span style="color: #475569; font-weight: 500;">' . esc_html( date_i18n( 'd \d\e F, Y - h:i A', strtotime( $fecha ) ) ) . '</span>'
+                : '<span style="color: #94a3b8;">—</span>';
             break;
 
         case 'estado_convocatoria':
-            $estado_wp = get_post_status( $post_id );
+            $estado_wp    = get_post_status( $post_id );
             $fecha_cierre = get_post_meta( $post_id, '_sigec_fecha_cierre', true );
-            $hoy = current_time( 'Y-m-d\TH:i' ); 
+            $adjudicada   = get_post_meta( $post_id, '_sigec_convocatoria_adjudicada', true );
+            $hoy          = current_time( 'Y-m-d\TH:i' );
 
-            if ( $estado_wp == 'publish' ) {
-                echo '<span style="background-color: #e6f6ea; color: #00A32A; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block;">Publicada en web</span><br>';
-                if ( $fecha_cierre && $fecha_cierre < $hoy ) {
-                    echo '<span style="color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 4px; display: inline-block;">Cerrada</span>';
+            if ( $estado_wp === 'publish' ) {
+                if ( $adjudicada ) {
+                    echo '<span class="sigec-admin-badge adjudicada">ADJUDICADA</span>';
+                } elseif ( $fecha_cierre && $fecha_cierre < $hoy ) {
+                    echo '<span class="sigec-admin-badge cerrada">CERRADA</span>';
                 } else {
-                    echo '<span style="color: #0073aa; font-size: 12px; font-weight: 600; margin-top: 4px; display: inline-block;">Abierta</span>';
+                    echo '<span class="sigec-admin-badge abierta">ABIERTA</span>';
                 }
-            } elseif ( $estado_wp == 'draft' ) {
-                echo '<span style="background-color: #f0f0f0; color: #666; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block;">Borrador</span><br>';
-                echo '<span style="color: #666; font-size: 12px; font-weight: 600; margin-top: 4px; display: inline-block;">Oculta</span>';
-            } elseif ( $estado_wp == 'pending' ) {
-                echo '<span style="background-color: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block;">Pendiente</span><br>';
-                echo '<span style="color: #b45309; font-size: 12px; font-weight: 600; margin-top: 4px; display: inline-block;">Por aprobar</span>';
+            } elseif ( $estado_wp === 'draft' ) {
+                echo '<span class="sigec-admin-badge borrador">BORRADOR</span>';
+            } elseif ( $estado_wp === 'pending' ) {
+                echo '<span class="sigec-admin-badge pendiente">PENDIENTE</span>';
             } else {
                 echo esc_html( $estado_wp );
             }
@@ -118,13 +123,13 @@ function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
                 'page'            => 'sigec-evaluacion',
                 'id_convocatoria' => $post_id,
             ), admin_url( 'edit.php' ) );
-            echo '<a href="' . esc_url( $url_eval ) . '" style="color: #0073aa; font-weight: 600; text-decoration: none;">' . intval( $total_ofertas ) . ' recibidas &rarr;</a>';
+            echo '<a href="' . esc_url( $url_eval ) . '" class="sigec-admin-ofertas-link">' . intval( $total_ofertas ) . ' ' . ( $total_ofertas === 1 ? 'recibida' : 'recibidas' ) . ' &rarr;</a>';
             break;
     }
 }
 add_action( 'manage_convocatoria_posts_custom_column', 'sigec_mostrar_datos_columnas_convocatoria', 10, 2 );
 
-// 2. Ocultar opciones de visibilidad (Privada/Contraseña)
+// 2. Ocultar opciones de visibilidad y estilizar tabla de Todas las Convocatorias
 function sigec_ocultar_opciones_visibilidad() {
     global $post_type;
     if ( 'convocatoria' === $post_type ) {
@@ -133,6 +138,110 @@ function sigec_ocultar_opciones_visibilidad() {
             label[for="visibility-radio-password"], label[for="visibility-radio-private"],
             #post-visibility-select .inline-edit-password-input { display: none !important; }
             .components-panel__row.editor-post-visibility { display: none !important; }
+
+            /* Diseño moderno SIGEC para el listado de Todas las Convocatorias */
+            body.edit-php.post-type-convocatoria .wrap {
+                max-width: 1220px;
+                margin-top: 22px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            }
+            body.edit-php.post-type-convocatoria .wrap h1.wp-heading-inline {
+                font-size: 24px !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
+                margin-right: 12px;
+            }
+            body.edit-php.post-type-convocatoria .wrap .page-title-action {
+                background: #0a4b9c !important;
+                color: #ffffff !important;
+                border: 1px solid #0a4b9c !important;
+                border-radius: 5px !important;
+                padding: 6px 14px !important;
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                top: -2px;
+                transition: background 0.15s;
+            }
+            body.edit-php.post-type-convocatoria .wrap .page-title-action:hover {
+                background: #073b7a !important;
+                border-color: #073b7a !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table {
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 8px !important;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table thead th,
+            body.edit-php.post-type-convocatoria .wp-list-table tfoot th {
+                background: #f8fafc !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                color: #475569 !important;
+                font-weight: 700 !important;
+                font-size: 12px !important;
+                padding: 13px 16px !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table thead th a,
+            body.edit-php.post-type-convocatoria .wp-list-table tfoot th a {
+                color: #475569 !important;
+                font-weight: 700 !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table tbody tr {
+                background: #ffffff !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table tbody tr:hover {
+                background: #f8fafc !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table tbody td,
+            body.edit-php.post-type-convocatoria .wp-list-table tbody th.check-column {
+                padding: 15px 16px !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                vertical-align: middle !important;
+                font-size: 13px !important;
+                color: #334155 !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table .row-title {
+                color: #0f172a !important;
+                font-weight: 700 !important;
+                font-size: 14px !important;
+            }
+            body.edit-php.post-type-convocatoria .wp-list-table .row-title:hover {
+                color: #0a4b9c !important;
+            }
+            body.edit-php.post-type-convocatoria .sigec-admin-badge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+            body.edit-php.post-type-convocatoria .sigec-admin-badge.adjudicada { background: #dcfce7; color: #15803d; }
+            body.edit-php.post-type-convocatoria .sigec-admin-badge.abierta    { background: #dbeafe; color: #1d4ed8; }
+            body.edit-php.post-type-convocatoria .sigec-admin-badge.cerrada    { background: #fee2e2; color: #dc2626; }
+            body.edit-php.post-type-convocatoria .sigec-admin-badge.borrador   { background: #f1f5f9; color: #475569; }
+            body.edit-php.post-type-convocatoria .sigec-admin-badge.pendiente  { background: #fef3c7; color: #b45309; }
+
+            body.edit-php.post-type-convocatoria .sigec-admin-ofertas-link {
+                display: inline-block;
+                background: #eff6ff;
+                color: #1d4ed8 !important;
+                border: 1px solid #bfdbfe;
+                padding: 5px 12px;
+                border-radius: 999px;
+                font-size: 12px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.15s;
+            }
+            body.edit-php.post-type-convocatoria .sigec-admin-ofertas-link:hover {
+                background: #dbeafe;
+                color: #1e40af !important;
+            }
         </style>';
     }
 }
