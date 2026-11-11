@@ -104,13 +104,21 @@ function sigec_mostrar_datos_columnas_convocatoria( $column, $post_id ) {
             $ofertas = get_posts( array(
                 'post_type'   => 'propuesta',
                 'post_status' => 'publish',
-                'meta_key'    => 'convocatoria_id',
-                'meta_value'  => $post_id,
                 'fields'      => 'ids',
                 'numberposts' => -1,
+                'meta_query'  => array(
+                    'relation' => 'OR',
+                    array( 'key' => '_sigec_convocatoria_id', 'value' => $post_id, 'compare' => '=' ),
+                    array( 'key' => 'convocatoria_id', 'value' => $post_id, 'compare' => '=' ),
+                ),
             ) );
             $total_ofertas = count( $ofertas );
-            echo '<span style="color: #0073aa; font-weight: 500;">' . intval( $total_ofertas ) . ' recibidas</span>';
+            $url_eval      = add_query_arg( array(
+                'post_type'       => 'convocatoria',
+                'page'            => 'sigec-evaluacion',
+                'id_convocatoria' => $post_id,
+            ), admin_url( 'edit.php' ) );
+            echo '<a href="' . esc_url( $url_eval ) . '" style="color: #0073aa; font-weight: 600; text-decoration: none;">' . intval( $total_ofertas ) . ' recibidas &rarr;</a>';
             break;
     }
 }
@@ -339,3 +347,6 @@ require_once plugin_dir_path( __FILE__ ) . 'admin/admin-metabox.php';
 
 //Comprobar y aceptar al proveedor
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-sigec-proveedores.php';
+
+// Panel de Evaluación de Ofertas y Cierre Contractual (RF 09 y RF 11)
+require_once plugin_dir_path( __FILE__ ) . 'admin/class-sigec-evaluacion-admin.php';

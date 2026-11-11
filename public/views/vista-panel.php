@@ -82,14 +82,17 @@ if ( ! defined( 'ABSPATH' ) ) {
                     </thead>
                     <tbody>
                         <?php foreach ( $mis_propuestas as $prop ) :
-                            $conv_id          = intval( get_post_meta( $prop->ID, 'convocatoria_id', true ) );
-                            $valor_ofertado   = get_post_meta( $prop->ID, 'valor_ofertado', true );
+                            $conv_id          = intval( get_post_meta( $prop->ID, '_sigec_convocatoria_id', true ) ?: get_post_meta( $prop->ID, 'convocatoria_id', true ) );
+                            $valor_ofertado   = get_post_meta( $prop->ID, '_sigec_valor_ofertado', true );
+                            if ( $valor_ofertado === '' ) {
+                                $valor_ofertado = get_post_meta( $prop->ID, 'valor_ofertado', true );
+                            }
                             $valor_limpio     = preg_replace( '/[^0-9]/', '', (string) $valor_ofertado );
                             $valor_formateado = $valor_limpio !== '' ? number_format( (float) $valor_limpio, 0, ',', '.' ) : $valor_ofertado;
-                            $estado_prop      = get_post_meta( $prop->ID, 'estado_propuesta', true ) ?: 'en_revision';
-                            $link_rut         = get_post_meta( $prop->ID, 'link_rut', true );
-                            $link_cedula      = get_post_meta( $prop->ID, 'link_cedula', true );
-                            $link_propuesta   = get_post_meta( $prop->ID, 'link_propuesta', true );
+                            $estado_prop      = get_post_meta( $prop->ID, '_sigec_estado_evaluacion', true ) ?: get_post_meta( $prop->ID, 'estado_propuesta', true ) ?: 'en_revision';
+                            $link_rut         = get_post_meta( $prop->ID, '_sigec_link_rut', true ) ?: get_post_meta( $prop->ID, 'link_rut', true );
+                            $link_cedula      = get_post_meta( $prop->ID, '_sigec_link_cedula', true ) ?: get_post_meta( $prop->ID, 'link_cedula', true );
+                            $link_propuesta   = get_post_meta( $prop->ID, '_sigec_link_propuesta', true ) ?: get_post_meta( $prop->ID, 'link_propuesta', true );
                             $titulo_conv      = $conv_id ? get_the_title( $conv_id ) : $prop->post_title;
                             $ano_conv         = $conv_id ? get_the_date( 'Y', $conv_id ) : get_the_date( 'Y', $prop->ID );
 
