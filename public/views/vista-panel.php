@@ -47,6 +47,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <span><?php echo esc_html( $nit ); ?></span>
             </div>
             <div class="sigec-info-item">
+                <label>Representante Legal</label>
+                <span><?php echo esc_html( isset( $rep_legal ) ? $rep_legal : 'No registrado' ); ?></span>
+            </div>
+            <div class="sigec-info-item">
                 <label>Correo Electrónico Registrado</label>
                 <span><?php echo esc_html( $current_user->user_email ); ?></span>
             </div>

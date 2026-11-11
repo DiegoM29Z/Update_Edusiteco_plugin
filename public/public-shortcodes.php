@@ -175,6 +175,7 @@ function sigec_renderizar_panel_proveedor() {
         'current_user' => $current_user,
         'razon_social' => get_user_meta( $current_user->ID, 'sigec_razon_social', true ) ?: $current_user->display_name,
         'nit'          => get_user_meta( $current_user->ID, 'sigec_nit', true ) ?: 'No registrado',
+        'rep_legal'    => get_user_meta( $current_user->ID, 'sigec_rep_legal', true ) ?: 'No registrado',
         'telefono'     => get_user_meta( $current_user->ID, 'sigec_telefono', true ) ?: 'No registrado',
     ) );
 }

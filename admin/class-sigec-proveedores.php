@@ -354,10 +354,7 @@ class SIGEC_Gestion_Proveedores {
                                         <?php if ( ! empty( $nit_limpio ) ) : ?>
                                             <div class="sigec-nit-links">
                                                 <a href="https://www.rues.org.co/" target="_blank" rel="noopener noreferrer" class="sigec-btn-nit-verify" onclick="sigecCopiarNit('<?php echo esc_js( $nit_limpio ); ?>', 'RUES');" title="Copia el NIT automáticamente y abre el portal oficial RUES (Cámaras de Comercio)">
-                                                    <span class="dashicons dashicons-search"></span> RUES
-                                                </a>
-                                                <a href="https://muisca.dian.gov.co/WebRutMuisca/DefConsultaEstadoRUT.faces" target="_blank" rel="noopener noreferrer" class="sigec-btn-nit-verify" onclick="sigecCopiarNit('<?php echo esc_js( $nit_limpio ); ?>', 'DIAN');" title="Copia el NIT automáticamente y abre la consulta de estado RUT en la DIAN">
-                                                    <span class="dashicons dashicons-shield"></span> DIAN
+                                                    <span class="dashicons dashicons-search"></span> Verificar en RUES
                                                 </a>
                                             </div>
                                         <?php endif; ?>
