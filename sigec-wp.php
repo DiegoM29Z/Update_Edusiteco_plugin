@@ -508,3 +508,5 @@ require_once plugin_dir_path( __FILE__ ) . 'admin/class-sigec-proveedores.php';
 
 // Panel de Evaluación de Ofertas y Cierre Contractual (RF 09 y RF 11)
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-sigec-evaluacion-admin.php';
+
+// Prueba de subida exitosa desde el nuevo equipo - 18 Nov
